@@ -1,0 +1,139 @@
+---
+title: "Internações (SIH-RD)"
+subtitle: "Peso cirúrgico, permanência, comorbidades e custos · HS · 2020–2025"
+---
+
+```{r setup}
+#| include: false
+source("_common.R")
+sih <- D$sih
+n_aih <- dplyr::n_distinct(sih$n_aih)
+```
+
+```{r kpis}
+#| output: asis
+perm_med <- stats::median(sih$dias_perm, na.rm = TRUE)
+urg <- mean(sih$carater == "Urgência", na.rm = TRUE)
+gasto <- sum(sih$val_tot, na.rm = TRUE)
+cat(kpi_row(list(
+  c(fmt_n(n_aih), "internações (AIH distintas)"),
+  c(paste0(fmt_1(perm_med), " dias"), "permanência mediana"),
+  c(paste0(fmt_1(100*urg), "%"), "internações de urgência"),
+  c(paste0("R$ ", fmt_n(round(gasto))), "gasto hospitalar total")
+)))
+```
+
+A HS internada tende a ser **moderada/grave** (drenagem, exérese, reconstrução). São
+**`r fmt_n(n_aih)` AIH** com `diag_princ == L732` em 2020–2025 — apenas o sabor
+**diagnóstico principal** (a extração não recupera HS como diagnóstico secundário).
+
+## Carga e perfil
+
+```{r serie-carater}
+sih |>
+  dplyr::filter(!is.na(carater)) |>
+  dplyr::count(ano, carater) |>
+  ggplot(aes(ano, n, fill = carater)) +
+  geom_col(width = 0.7) +
+  scale_fill_manual(values = c(Eletivo = "#A87FA8", `Urgência` = "#5C3F6C")) +
+  scale_x_continuous(breaks = ANOS) +
+  labs(x = NULL, y = "Internações", fill = "Caráter",
+       title = "Internações por HS, por ano e caráter",
+       subtitle = "Equilíbrio entre eletivo (programação cirúrgica) e urgência (drenagem aguda).") +
+  theme_hs()
+```
+
+```{r piramide-sih}
+sih |>
+  dplyr::filter(!is.na(faixa), !is.na(sexo)) |>
+  dplyr::count(faixa, sexo) |>
+  dplyr::mutate(n = ifelse(sexo == "Masculino", -n, n)) |>
+  ggplot(aes(x = faixa, y = n, fill = sexo)) +
+  geom_col(width = 0.85) +
+  coord_flip() +
+  scale_y_continuous(labels = function(x) fmt_n(abs(x))) +
+  scale_fill_manual(values = c(Masculino = "#816095", Feminino = "#5C3F6C")) +
+  labs(x = "Faixa etária", y = "Internações", fill = NULL,
+       title = "Pirâmide de internações por sexo e idade",
+       subtitle = "Concentração em adultos jovens, predomínio feminino.") +
+  theme_hs()
+```
+
+## Permanência hospitalar
+
+```{r permanencia}
+sih |>
+  dplyr::filter(!is.na(dias_perm), dias_perm <= stats::quantile(dias_perm, 0.98, na.rm = TRUE)) |>
+  ggplot(aes(dias_perm)) +
+  geom_histogram(binwidth = 1, fill = "#816095", color = "white") +
+  labs(x = "Dias de permanência", y = "Internações",
+       title = "Distribuição da permanência hospitalar",
+       subtitle = paste0("Mediana ", fmt_1(stats::median(sih$dias_perm, na.rm=TRUE)),
+                          " dias. Cauda longa = casos graves/reconstrução. (2% superiores omitidos.)")) +
+  theme_hs()
+```
+
+## Comorbidades registradas
+
+Buscadas nos campos secundários (`diag_secun`, `diagsec1`–`9`).
+
+```{r comorb}
+sih |>
+  dplyr::summarise(dplyr::across(dplyr::starts_with("com_"), ~ sum(.x, na.rm = TRUE))) |>
+  tidyr::pivot_longer(dplyr::everything(), names_to = "comorbidade", values_to = "n") |>
+  dplyr::mutate(comorbidade = stringr::str_remove(comorbidade, "^com_"),
+                pct = 100*n/nrow(sih)) |>
+  dplyr::arrange(dplyr::desc(n)) |>
+  ggplot(aes(reorder(comorbidade, n), n)) +
+  geom_col(fill = "#5C3F6C", width = 0.75) +
+  geom_text(aes(label = n), hjust = -0.3, size = 3, color = "#3E2A4D") +
+  coord_flip() +
+  labs(x = NULL, y = "Internações com a comorbidade registrada",
+       title = "Comorbidades registradas nas AIH de HS") +
+  theme_hs()
+```
+
+::: {.callout-nota}
+**Forte subnotificação.** Apenas **~16% das AIH-HS têm qualquer diagnóstico secundário
+preenchido** (84% nenhum), com completude muito heterogênea por UF (SP ~32%, vários
+estados 0%). Os percentuais acima são **piso subestimado e enviesado** — leia como
+"comorbidade **registrada na AIH**", não prevalência. `datasus_hs.md` §4.
+:::
+
+## Custos hospitalares
+
+```{r custos}
+sih |>
+  dplyr::group_by(ano) |>
+  dplyr::summarise(internacoes = dplyr::n_distinct(n_aih),
+                   gasto_total = sum(val_tot, na.rm = TRUE),
+                   custo_medio = gasto_total / internacoes, .groups = "drop") |>
+  dplyr::transmute(Ano = ano, `Internações` = fmt_n(internacoes),
+                   `Gasto total (R$)` = fmt_n(round(gasto_total)),
+                   `Custo médio/AIH (R$)` = fmt_n(round(custo_medio))) |>
+  tabela_hs(titulo = "Gasto hospitalar com HS por ano",
+            nota = "val_tot (SIH). Não inclui o alto custo ambulatorial (adalimumabe/APAC), ausente nesta extração do SIA-PA.")
+```
+
+## Taxa de internação padronizada
+
+```{r tx-internacao}
+num_sih <- contar_estrato(sih, col_uf = "uf_res", distinct_por = "n_aih")
+taxas_padronizadas(num_sih, D$pop, grupos = "ano") |>
+  ggplot(aes(ano, taxa_pad)) +
+  geom_ribbon(aes(ymin = ic_inf, ymax = ic_sup), fill = "#D8B4C4", alpha = 0.5) +
+  geom_line(color = "#5C3F6C", linewidth = 1.1) + geom_point(color = "#5C3F6C", size = 2.3) +
+  scale_x_continuous(breaks = ANOS) +
+  labs(x = NULL, y = "por 100 mil (padronizada)",
+       title = "Taxa de internação por HS, padronizada por idade e sexo",
+       subtitle = "N baixo → IC largo. Internação como motivo principal (diag_princ).") +
+  theme_hs()
+```
+
+## Limitações
+
+::: {.callout-nota}
+Só o sabor **diagnóstico principal** (HS em secundário não recuperável); **comorbidade
+subnotificada** (§4); **sem alto custo ambulatorial** (sem APAC); N baixo → taxas
+instáveis; **2020–2021** sob pandemia. `datasus_hs.md` §9.
+:::

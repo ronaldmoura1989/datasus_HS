@@ -1,0 +1,52 @@
+---
+title: "Considerações finais"
+subtitle: "Impacto da HS no SUS, perspectivas e oportunidades de acesso"
+---
+
+## Síntese
+
+A análise dos microdados do DATASUS (SIA-PA, SIH-RD e SIM-DO, 2020–2025) para a Hidradenite Supurativa (CID-10 **L73.2**) compõe um retrato coerente, ainda que necessariamente parcial, de uma doença crônica, debilitante e historicamente subdimensionada no SUS. O eixo ambulatorial é, disparado, o centro de gravidade dos dados: cerca de **88% dos registros do SIA-HS correspondem à dispensação de adalimumabe**, deslocando o significado das nossas medidas. O que tabulamos não é prevalência, mas **detecção e uso de serviços** — em particular, uso do componente de alto custo. Os denominadores são populações em risco aproximadas, não casos confirmados, e o número de pessoas por trás dos registros (estimativa probabilística de **~25 a 31 mil pseudo-pacientes**, na ausência de identificador longitudinal no dado público) deve ser lido como ordem de grandeza, não como contagem.
+
+Dois achados novos qualificam essa síntese. Primeiro, a confirmação de que a **geografia da detecção mede capacidade diagnóstica instalada**, e não distribuição real da doença. Segundo, a leitura, agora possível nos microdados, de uma **política de substituição por biossimilares** em curso no componente de alto custo — um sinal de que o dado administrativo, apesar de suas limitações clínicas, captura com nitidez decisões de gestão farmacêutica.
+
+Os demais eixos reforçam o caráter ambulatorial e de alto custo do problema: o SIH-RD registra apenas **631 internações** no período, com comorbidades provavelmente subnotificadas (preenchimento de diagnósticos secundários em torno de **16%**), e o SIM-DO confirma que a HS é **quase invisível na mortalidade** (96 óbitos com menção, apenas 1 como causa básica). A HS pesa no SUS pelo custo continuado do tratamento e pela carga de adoecimento crônico, não pela letalidade.
+
+## Impacto no SUS e inequidade de acesso
+
+A distribuição territorial da detecção é o achado de saúde pública mais consequente — e o mais traiçoeiro de interpretar. O cruzamento da **densidade de dermatologistas por UF** (fonte externa: CNES-PF, CBO 223117/225135) com a taxa de detecção padronizada de HS produz uma **correlação de Pearson r = 0,71**, forte e positiva. Em outras palavras: onde há mais dermatologistas, detecta-se mais HS — o que é esperado se a "taxa" mede oferta, e não doença.
+
+A magnitude da desigualdade de oferta é expressiva. A densidade de dermatologistas varia cerca de **6 vezes entre os extremos**: aproximadamente **11 por 100 mil no DF e no RJ, e 9,6 em SP**, contra **~1,8 no MA e ~2,0 no AC, RR e AP**. O **heatmap UF × ano** torna esse padrão visível e crônico: a produção concentra-se de forma persistente em São Paulo, no Paraná e nas capitais, com **vazios assistenciais que se repetem ano após ano no interior do Norte e Nordeste**, sem sinal de convergência ao longo da série.
+
+> A leitura epidemiológica correta inverte a aparência do dado. As menores "taxas" do Norte e Nordeste **não indicam menos doença, mas menos porta de entrada diagnóstica**. O r = 0,71 transforma uma suspeita metodológica em evidência quantitativa de **subdetecção por barreira de acesso**: a HS existe nessas regiões, mas não é diagnosticada, codificada e tratada na mesma proporção. A inequidade, portanto, é dupla — de acesso ao diagnóstico especializado e, em consequência, ao tratamento de alto custo.
+
+Essa dependência da oferta especializada para o diagnóstico atravessa todos os achados: o subdiagnóstico provável (HS frequentemente codificada como abscesso, L02x), o viés de gravidade da captura restrita a L73.2, e o atraso diagnóstico — clinicamente reconhecido, mas **não mensurável** neste desenho por ausência de seguimento individual.
+
+## A transição para biossimilares: o que o alto custo revela
+
+O detalhamento das apresentações de adalimumabe revela um movimento de gestão que é, em si, um achado. As dispensações distribuem-se entre o produto **referência** (procedimento 0604380062) e dois **biossimilares** (Biossimilar A, 0604380127; Biossimilar B, 0604380135), e a substituição foi **rápida e quase universal**:
+
+- Em **2020–2021**, praticamente toda a dispensação era do produto referência.
+- O **referência despenca de 16.401 dispensações em 2022 para 1.496 em 2025**.
+- O **Biossimilar A sobe para 35.112 dispensações em 2025**, assumindo o papel central.
+
+A migração é **heterogênea entre estados**: alguns adotam o biossimilar já em 2023, MA e RN deslocam-se mais para o Biossimilar B, e estados de pequeno volume apresentam padrões menos estáveis. Trata-se de um **caso exemplar de política de economia farmacêutica via biossimilar visível diretamente nos microdados** — um uso secundário do dado administrativo que vai além da epidemiologia e alcança a avaliação de tecnologias e a gestão do CEAF.
+
+## Perspectivas e oportunidades de acesso
+
+1. **Consolidar e monitorar a substituição por biossimilar como ganho de eficiência.** A migração para biossimilares amplia a sustentabilidade do tratamento de alto custo e pode liberar recursos para ampliar acesso. Recomenda-se transformá-la em **indicador de monitoramento contínuo** (proporção referência vs. biossimilar por UF e ano) e acoplar **farmacovigilância de troca** (switch), acompanhando manutenção de resposta e eventos adversos após a substituição — especialmente nas trocas entre biossimilares (A↔B), menos respaldadas por evidência do que a troca referência→biossimilar.
+
+2. **Usar a densidade de dermatologistas (CNES) como indicador de equidade.** A própria variável que confunde a taxa de detecção pode ser convertida em **instrumento de monitoramento**: razão de dermatologistas por 100 mil habitantes por UF e região de saúde, pactuada como marcador de capacidade diagnóstica instalada. Onde a densidade é baixa e a detecção também, presume-se **demanda reprimida**, não ausência de doença.
+
+3. **Teledermatologia para o gargalo de oferta.** Diante de uma desigualdade de 6× na oferta especializada, a **teledermatologia** (teleconsultoria e telediagnóstico, integráveis à RNDS e ao Meu SUS Digital) é a via mais factível para encurtar a distância entre o paciente do interior do Norte/Nordeste e o diagnóstico, sem depender da fixação de especialistas em todos os municípios.
+
+4. **Qualificar a codificação na ponta.** Reduzir a subcodificação (L02x → L73.2) por meio de capacitação e de regras de qualificação no e-SUS APS melhoraria simultaneamente a detecção e a confiabilidade da vigilância — pré-requisito para qualquer estimativa de carga mais próxima da realidade.
+
+5. **Buscar o identificador longitudinal.** A integração via CNS/RNDS, sob salvaguardas da LGPD (dado pessoal sensível, anonimização e base legal para uso secundário), permitiria, no futuro, mensurar **atraso diagnóstico, recidiva e trajetória de tratamento** — hoje inacessíveis no dado público agregado.
+
+## Considerações finais
+
+Os microdados do DATASUS retratam a HS no SUS como uma doença **ambulatorial, crônica e de alto custo**, cujo principal achado de gestão é a já consolidada **transição para biossimilares de adalimumabe**, e cujo principal achado de saúde pública é uma **inequidade de detecção fortemente determinada pela oferta de dermatologistas** (r = 0,71; variação de ~6× entre UFs), com vazios persistentes no interior do Norte e Nordeste.
+
+É imprescindível reafirmar os limites do que foi medido: trabalhamos com **detecção e uso**, não prevalência; com **registros**, não pessoas; com captura **restrita a L73.2**, sujeita a viés de gravidade e à descontinuidade imposta pela pandemia em 2020–2021. As referências ao contexto normativo (PCDT da HS e fluxos do CEAF) permanecem **[VERIFICAR]** quanto a números e vigência antes de qualquer afirmação definitiva.
+
+> A mensagem central, contudo, é robusta a essas ressalvas: no SUS, **detectar HS depende de ter a quem detectar** — e a desigualdade na oferta diagnóstica, somada à incipiente migração para biossimilares, define tanto o problema de equidade quanto a oportunidade de eficiência que esta análise coloca diante da gestão.

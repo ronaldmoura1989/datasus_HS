@@ -1,0 +1,80 @@
+---
+title: "Mortalidade (SIM-DO)"
+subtitle: "Exploratório · HS quase invisível na mortalidade · 2020–2025"
+---
+
+```{r setup}
+#| include: false
+source("_common.R")
+sim <- D$sim
+cb <- sum(grepl("L732", sim$causabas), na.rm = TRUE)
+```
+
+```{r kpis}
+#| output: asis
+cat(kpi_row(list(
+  c(fmt_n(nrow(sim)), "óbitos com HS (qualquer campo)"),
+  c(fmt_n(cb), "óbitos com HS como causa básica"),
+  c(paste0(fmt_1(mean(sim$idade_anos, na.rm=TRUE)), " anos"), "idade média ao óbito"),
+  c(paste0(fmt_1(100*mean(sim$sexo=="Feminino", na.rm=TRUE)), "%"), "do sexo feminino")
+)))
+```
+
+::: {.callout-nota}
+**Análise exploratória, N muito baixo.** A HS **quase nunca** é registrada na
+mortalidade: em 2020–2025 há **`r fmt_n(nrow(sim))` óbitos** com `L732` em qualquer
+campo da DO e **apenas `r fmt_n(cb)`** como **causa básica**. O ano de **2025 é
+preliminar** (prévia opendatasus). Não calcule taxas — trate como casuística.
+:::
+
+## Distribuição temporal e fonte
+
+```{r serie}
+sim |>
+  dplyr::count(ano, fonte) |>
+  ggplot(aes(factor(ano), n, fill = fonte)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = n), position = position_stack(vjust = 0.5), color = "white", size = 3.4) +
+  scale_fill_manual(values = c(datasus_sim_do = "#5C3F6C",
+                               opendatasus_preliminar_2025 = "#A87FA8"),
+                    labels = c("DATASUS SIM-DO", "opendatasus (preliminar)")) +
+  labs(x = NULL, y = "Óbitos com HS", fill = NULL,
+       title = "Óbitos com HS por ano e fonte",
+       subtitle = "2025 = prévia opendatasus; completude/codificação podem diferir.") +
+  theme_hs()
+```
+
+## Onde a HS aparece na Declaração de Óbito
+
+```{r posicao}
+sim |>
+  dplyr::mutate(posicao = dplyr::if_else(grepl("L732", causabas), "Causa básica",
+                                         "Causa contribuinte (linhas)")) |>
+  dplyr::count(posicao, name = "obitos") |>
+  dplyr::mutate(`%` = fmt_1(100*obitos/sum(obitos))) |>
+  tabela_hs(titulo = "Posição da HS na DO",
+            nota = "HS é quase sempre causa contribuinte, não básica — coerente com mortalidade por causas associadas (sepse, comorbidades), não pela HS em si.")
+```
+
+## Perfil por sexo e idade
+
+```{r perfil}
+sim |>
+  dplyr::filter(!is.na(faixa), !is.na(sexo)) |>
+  dplyr::count(faixa, sexo) |>
+  ggplot(aes(faixa, n, fill = sexo)) +
+  geom_col(position = "dodge", width = 0.8) +
+  scale_fill_manual(values = c(Masculino = "#816095", Feminino = "#5C3F6C")) +
+  labs(x = "Faixa etária", y = "Óbitos", fill = NULL,
+       title = "Óbitos com HS por sexo e faixa etária",
+       subtitle = "N baixo — interpretar como casuística, não distribuição estável.") +
+  theme_hs() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Limitações
+
+::: {.callout-nota}
+**Subnotificação quase total** da HS como entidade na mortalidade; N muito baixo
+inviabiliza taxas; **2025 preliminar**; mortalidade reflete causas associadas, não a
+HS diretamente. Exploratório por natureza. `datasus_hs.md` §9.
+:::

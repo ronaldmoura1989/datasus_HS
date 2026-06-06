@@ -1,0 +1,300 @@
+---
+title: "Ambulatorial (SIA-PA)"
+subtitle: "Acesso, perfil, taxas padronizadas e pseudo-pacientes · HS · 2020–2025"
+---
+
+```{r setup}
+#| include: false
+source("_common.R")
+sia <- D$sia |> dplyr::collect()
+```
+
+```{r kpis}
+#| output: asis
+pac <- D$sens
+fem <- mean(sia$sexo == "Feminino", na.rm = TRUE)
+modal <- sia |> dplyr::count(faixa) |> dplyr::slice_max(n, n = 1) |> dplyr::pull(faixa)
+cat(kpi_row(list(
+  c(fmt_n(nrow(sia)), "registros ambulatoriais"),
+  c(paste0(fmt_n(min(pac$n_pacientes[pac$nivel!='registro_evento'])), "–",
+           fmt_n(max(pac$n_pacientes[pac$nivel!='registro_evento']))), "pseudo-pacientes"),
+  c(paste0(fmt_1(100*fem), "%"), "registros do sexo feminino"),
+  c(as.character(modal), "faixa etária modal")
+)))
+```
+
+O SIA-PA capta a **produção ambulatorial** com `pa_cidpri == L732`. São
+**`r fmt_n(nrow(sia))` registros** em 2020–2025. A unidade é o **registro de
+procedimento**, não a pessoa — ver [pseudo-pacientes](#pseudo-pacientes).
+
+## Perfil demográfico
+
+```{r piramide}
+pir <- sia |>
+  dplyr::filter(!is.na(faixa), !is.na(sexo)) |>
+  dplyr::count(faixa, sexo) |>
+  dplyr::mutate(n = ifelse(sexo == "Masculino", -n, n))
+
+ggplot(pir, aes(x = faixa, y = n, fill = sexo)) +
+  geom_col(width = 0.85) +
+  coord_flip() +
+  scale_y_continuous(labels = function(x) fmt_n(abs(x))) +
+  scale_fill_manual(values = c(Masculino = "#816095", Feminino = "#5C3F6C")) +
+  labs(x = "Faixa etária", y = "Registros", fill = NULL,
+       title = "Pirâmide de registros por sexo e idade",
+       subtitle = "HS predomina em mulheres adultas jovens (20–44).") +
+  theme_hs()
+```
+
+```{r raca}
+sia |>
+  dplyr::mutate(raca_cor = forcats::fct_na_value_to_level(factor(raca_cor), "Não informada")) |>
+  dplyr::count(raca_cor, name = "registros") |>
+  dplyr::arrange(dplyr::desc(registros)) |>
+  dplyr::mutate(`%` = fmt_1(100*registros/sum(registros)), registros = fmt_n(registros)) |>
+  tabela_hs(titulo = "Registros por raça/cor",
+            nota = "Raça/cor 99 (sem informação) reclassificada como 'Não informada'.")
+```
+
+## Taxas de detecção padronizadas
+
+Taxas **por 100 mil**, **padronizadas por idade e sexo** (direta, padrão Censo 2022,
+IC gama). São taxas de **detecção/uso**, não de prevalência.
+
+```{r serie-pad}
+num <- contar_estrato(sia, col_uf = "uf_pcn")
+serie <- taxas_padronizadas(num, D$pop, grupos = "ano")
+ggplot(serie, aes(ano, taxa_pad)) +
+  geom_ribbon(aes(ymin = ic_inf, ymax = ic_sup), fill = "#D8B4C4", alpha = 0.5) +
+  geom_line(color = "#5C3F6C", linewidth = 1.1) +
+  geom_point(color = "#5C3F6C", size = 2.3) +
+  scale_x_continuous(breaks = ANOS) +
+  labs(x = NULL, y = "por 100 mil (padronizada)",
+       title = "Taxa de detecção ambulatorial de HS, padronizada",
+       subtitle = "Crescimento dominado por aumento de detecção. 2020–2021 sob efeito da pandemia.") +
+  theme_hs()
+```
+
+```{r tab-uf}
+df_uf <- taxas_padronizadas(num, D$pop, grupos = "uf") |>
+  dplyr::mutate(regiao = mapear_uf_regiao(uf)) |>
+  dplyr::arrange(regiao, dplyr::desc(taxa_pad)) |>
+  dplyr::transmute(regiao, UF = uf, Eventos = fmt_n(eventos),
+                   `Taxa bruta` = fmt_1(taxa_bruta), `Taxa padronizada` = fmt_1(taxa_pad),
+                   `IC95%` = paste0(fmt_1(ic_inf), "–", fmt_1(ic_sup)))
+
+flextable::as_grouped_data(df_uf, groups = "regiao") |>
+  flextable::as_flextable(hide_grouplabel = TRUE) |>
+  flextable::theme_booktabs() |>
+  flextable::bg(part = "header", bg = "#5C3F6C") |>
+  flextable::color(part = "header", color = "white") |>
+  flextable::bold(part = "header") |>
+  flextable::bg(i = ~ !is.na(regiao), bg = "#EFE7F0") |>
+  flextable::bold(i = ~ !is.na(regiao)) |>
+  flextable::color(i = ~ !is.na(regiao), color = "#3E2A4D") |>
+  flextable::fontsize(size = 10, part = "all") |>
+  flextable::padding(padding = 4, part = "all") |>
+  flextable::set_caption("Taxa de detecção ambulatorial por região e UF (pool 2020–2025, pessoa-anos)") |>
+  flextable::add_footer_lines("Padronização direta idade×sexo, padrão Censo 2022. Linhas em destaque = região. A variação reflete fortemente a oferta de serviços (acesso), não só doença.") |>
+  flextable::fontsize(size = 8, part = "footer") |>
+  flextable::color(color = "#5b5165", part = "footer") |>
+  flextable::autofit()
+```
+
+### Estrato-alvo: mulheres 20–39
+
+```{r alvo}
+alvo_f <- c("20-24","25-29","30-34","35-39")
+taxa_bruta(dplyr::filter(num, sexo=="Feminino", faixa %in% alvo_f),
+           dplyr::filter(D$pop, sexo=="Feminino", faixa %in% alvo_f),
+           grupos = "ano") |>
+  ggplot(aes(ano, taxa_bruta)) +
+  geom_col(fill = "#816095", width = 0.65) +
+  geom_text(aes(label = fmt_1(taxa_bruta)), vjust = -0.4, size = 3.2, color = "#3E2A4D") +
+  scale_x_continuous(breaks = ANOS) +
+  labs(x = NULL, y = "por 100 mil", title = "Taxa de detecção em mulheres 20–39 anos",
+       subtitle = "Estrato mais sensível ao sinal da HS.") +
+  theme_hs()
+```
+
+## Inequidade geográfica: evolução por estado
+
+```{r heatmap}
+#| fig-height: 9
+hm <- sia |>
+  dplyr::filter(!is.na(uf_pcn)) |>
+  dplyr::count(ano, uf = uf_pcn) |>
+  tidyr::complete(ano = ANOS, uf = UFS, fill = list(n = 0)) |>
+  dplyr::mutate(regiao = factor(mapear_uf_regiao(uf),
+                  levels = c("Norte","Nordeste","Centro-Oeste","Sudeste","Sul")))
+uford <- hm |> dplyr::group_by(uf, regiao) |>
+  dplyr::summarise(tot = sum(n), .groups = "drop") |>
+  dplyr::arrange(regiao, tot) |> dplyr::pull(uf)
+hm <- dplyr::mutate(hm, uf = factor(uf, levels = uford))
+
+ggplot(hm, aes(factor(ano), uf, fill = n)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  geom_text(aes(label = fmt_n(n), color = n > max(n)/8), size = 2.5, show.legend = FALSE) +
+  facet_grid(regiao ~ ., scales = "free_y", space = "free_y", switch = "y") +
+  scale_fill_gradient(low = "#E9CDC9", high = "#5C3F6C", trans = "log1p",
+                      breaks = c(0, 10, 100, 1000, 10000),
+                      labels = scales::label_number(big.mark = ".")) +
+  scale_color_manual(values = c(`TRUE` = "white", `FALSE` = "#3E2A4D")) +
+  labs(x = NULL, y = NULL, fill = "Registros/ano",
+       title = "Evolução dos registros ambulatoriais de HS por estado",
+       subtitle = "Por UF de residência, agrupado por região. Cor em escala log; rótulos = contagem real.") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid = element_blank(), legend.position = "top",
+        strip.placement = "outside",
+        strip.text.y.left = element_text(angle = 0, face = "bold", color = "#3E2A4D"),
+        plot.title = element_text(face = "bold", color = "#3E2A4D")) +
+  guides(fill = guide_colorbar(barwidth = unit(8, "cm"), barheight = unit(0.4, "cm")))
+```
+
+O mapa de calor expõe a **concentração persistente** da produção ambulatorial em poucos
+estados (SP, PR, e capitais), com **vazios** ou contagens muito baixas em boa parte do
+Norte e Nordeste ao longo de todos os anos — coerente com **barreira de acesso e
+subdetecção**, não ausência de doença. Note ainda o degrau de **2020–2021** (pandemia)
+e a aceleração subsequente, puxada pela difusão do biológico.
+
+### Oferta de dermatologistas e o confundimento por acesso
+
+A detecção da HS depende de haver quem a diagnostique. Cruzando a **densidade de
+dermatologistas** (CNES, CBO 223117/225135, por 100 mil habitantes) com a taxa de
+detecção padronizada, por UF, o padrão de **acesso** fica explícito.
+
+```{r derm-scatter}
+#| fig-height: 5.2
+derm <- readRDS(here::here("data/denominators/dermatologistas_uf.rds")) |>
+  dplyr::filter(!is.na(derm_por_100k)) |>
+  dplyr::group_by(uf, regiao) |>
+  dplyr::summarise(derm_100k = mean(derm_por_100k), .groups = "drop")
+sc <- taxas_padronizadas(num, D$pop, grupos = "uf") |>
+  dplyr::select(uf, taxa_pad) |>
+  dplyr::left_join(derm, by = "uf")
+rho <- cor(sc$derm_100k, sc$taxa_pad, use = "complete.obs")
+
+ggplot(sc, aes(derm_100k, taxa_pad)) +
+  geom_smooth(method = "lm", se = TRUE, color = "#5C3F6C", fill = "#D8B4C4", alpha = 0.4) +
+  geom_point(aes(color = regiao), size = 3) +
+  geom_text(aes(label = uf), size = 2.8, vjust = -0.8, color = "#3E2A4D", check_overlap = TRUE) +
+  scale_color_manual(values = PAL_HS) +
+  labs(x = "Dermatologistas por 100 mil hab. (CNES, média 2020–2025)",
+       y = "Taxa de detecção de HS padronizada (/100 mil)", color = "Região",
+       title = "Oferta de dermatologistas × detecção de HS, por UF",
+       subtitle = paste0("Correlação de Pearson r = ", fmt_1(rho),
+                         ". A detecção acompanha a oferta — sinal de barreira de acesso.")) +
+  theme_hs()
+```
+
+A associação positiva entre **oferta de dermatologia** e **detecção de HS** indica que a
+variação geográfica das taxas mede, em boa parte, **capacidade diagnóstica instalada** —
+não a distribuição real da doença. UFs com poucos dermatologistas tendem a registrar
+menos HS, reforçando a hipótese de **subdetecção por barreira de acesso** no interior do
+país (ver [Considerações finais](consideracoes_finais.qmd)).
+
+## Pseudo-pacientes {#pseudo-pacientes}
+
+Sem identificador de paciente no SIA público, estimamos pessoas por **record linkage**
+de quase-identificadores (sexo, ano de nascimento, município, raça/cor). O resultado é
+um **intervalo**, não um número exato (método: `datasus_hs.md` §5.1).
+
+```{r sens}
+D$sens |>
+  dplyr::transmute(Nível = nivel, Regra = regra,
+                   `Pseudo-pacientes` = fmt_n(n_pacientes),
+                   `Registros/paciente` = fmt_1(reg_por_paciente)) |>
+  tabela_hs(titulo = "Sensibilidade da chave de individualização",
+            nota = "Intervalo [frouxa; estrita]. Colisão domina em municípios grandes; fragmentação na cauda crônica. Não é contagem oficial de pacientes.")
+```
+
+::: {.callout-nota}
+**Leitura.** De `r fmt_n(nrow(sia))` registros para **~`r fmt_n(min(D$sens$n_pacientes[D$sens$nivel!='registro_evento']))`–`r fmt_n(max(D$sens$n_pacientes[D$sens$nivel!='registro_evento']))` pseudo-pacientes**
+(≈ 5–6 registros por pessoa). Em capitais a desambiguação é fundamentalmente limitada
+pela colisão de atributos — as taxas seguem sendo de **detecção/uso**.
+:::
+
+## Quem maneja e com quais procedimentos
+
+```{r proc}
+sigtab <- readRDS(here::here("data/denominators/sigtab.rds"))  # cache de fetch_sigtab()
+proc <- sia |>
+  dplyr::count(pa_proc_id, name = "registros") |>
+  dplyr::slice_max(registros, n = 10) |>
+  dplyr::left_join(sigtab, by = "pa_proc_id") |>
+  dplyr::mutate(proc_nome = stringr::str_to_sentence(proc_nome),
+                `%` = fmt_1(100*registros/nrow(sia)), registros = fmt_n(registros))
+proc |>
+  dplyr::transmute(`Código` = pa_proc_id, Procedimento = proc_nome, Registros = registros, `%` = `%`) |>
+  tabela_hs(titulo = "Procedimentos ambulatoriais mais frequentes em HS (rótulos SIGTAP)",
+            nota = "Nomes obtidos via microdatasus::fetch_sigtab(). Três apresentações de adalimumabe (0604380…) concentram a maior parte da produção.")
+```
+
+```{r ada-share}
+ada <- sia |> dplyr::summarise(p = mean(stringr::str_starts(pa_proc_id, "060438"))) |> dplyr::pull(p)
+```
+
+::: {.callout-nota}
+**A produção ambulatorial de HS é dominada pelo alto custo.** Cerca de
+**`r fmt_1(100*ada)`%** dos registros são **dispensação de adalimumabe**
+(procedimentos `0604380…`, biológico do CEAF). Implicações: (a) o "crescimento da
+detecção" no SIA reflete em grande parte o **avanço do biológico**, não apenas
+diagnóstico novo; (b) ao contrário do previsto, o **eixo de custo do adalimumabe é
+rastreável** aqui via `pa_proc_id`/`pa_valapr` (e não exige a base APAC); (c) os
+~5–6 registros por pseudo-paciente correspondem, sobretudo, a **dispensações mensais**
+do medicamento.
+:::
+
+### Transição para biossimilares por estado
+
+Os três procedimentos de adalimumabe correspondem ao **referência** e a dois
+**biossimilares** (A e B). Entre 2022 e 2025 o SUS migrou rapidamente do medicamento de
+referência para os biossimilares — uma substituição com forte impacto de custo.
+
+```{r ada-tipos}
+#| fig-height: 10
+labs_ada <- c("0604380062" = "Referência",
+              "0604380127" = "Biossimilar A",
+              "0604380135" = "Biossimilar B")
+ada <- D$sia |>
+  dplyr::filter(pa_proc_id %in% names(labs_ada)) |>
+  dplyr::select(ano, uf_pcn, pa_proc_id) |> dplyr::collect() |>
+  dplyr::filter(!is.na(uf_pcn)) |>
+  dplyr::count(ano, uf = uf_pcn, pa_proc_id) |>
+  dplyr::mutate(tipo = factor(labs_ada[pa_proc_id],
+                              levels = c("Referência","Biossimilar A","Biossimilar B")),
+                regiao = mapear_uf_regiao(uf))
+# ordenar facetas por região e, dentro, por volume total
+ord <- ada |> dplyr::group_by(uf, regiao) |> dplyr::summarise(t = sum(n), .groups = "drop") |>
+  dplyr::arrange(regiao, dplyr::desc(t)) |> dplyr::pull(uf)
+ada <- dplyr::mutate(ada, uf = factor(uf, levels = ord))
+
+ggplot(ada, aes(factor(ano), n, fill = tipo)) +
+  geom_col(position = "fill", width = 0.9) +
+  facet_wrap(~ uf, ncol = 6) +
+  scale_fill_manual(values = c("Referência" = "#5C3F6C",
+                               "Biossimilar A" = "#A87FA8",
+                               "Biossimilar B" = "#E9CDC9")) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = NULL, y = "Composição da dispensação", fill = NULL,
+       title = "Adalimumabe: referência vs biossimilares, por estado e ano",
+       subtitle = "Proporção de cada apresentação nas dispensações de HS. UF por residência, agrupadas por região.") +
+  theme_hs(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 7),
+        legend.position = "top", panel.grid = element_blank())
+```
+
+A migração é nítida e quase universal: estados que em 2020–2021 dispensavam **só o
+referência** passam, até 2025, a usar majoritariamente **biossimilares** — com ritmos
+distintos entre UFs (algumas adotam o Biossimilar A já em 2023; outras mantêm o
+referência por mais tempo). Estados com poucas células refletem **baixo volume de
+dispensação** (acesso restrito ao biológico), não preferência por uma apresentação.
+
+## Limitações
+
+::: {.callout-nota}
+Captura **restrita** (`L732`) → subestima HS leve (codificada como abscesso `L02x`);
+**viés de gravidade** (o capturado tende a HS moderada/grave); **pa_munpcn** pode
+mudar (fragmentação); **2020–2021** sob pandemia; taxas de **detecção/uso**, não
+prevalência. Detalhes: `datasus_hs.md` §9.
+:::

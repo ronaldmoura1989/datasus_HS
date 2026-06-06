@@ -1,0 +1,5 @@
+nivel,regra,n_pacientes,n_registros,reg_por_paciente
+registro_evento,sem de-dup,158850,158850,1
+estrita,sexo+raça+município+ano_nasc exato,30675,158850,5.18
+intermediaria,estrita + janela ano_nasc ±1 (CENTRAL),27568,158850,5.76
+frouxa,sexo+município+ano_nasc±1 (sem raça),25325,158850,6.27

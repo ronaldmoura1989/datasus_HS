@@ -1,0 +1,100 @@
+---
+title: "Hidradenite Supurativa no SUS"
+subtitle: "Microdados do DATASUS · CID L73.2 · 2020–2025"
+---
+
+```{r setup}
+#| include: false
+source("_common.R")
+```
+
+```{r kpis-calc}
+sia_n   <- D$sia |> dplyr::count() |> dplyr::collect() |> dplyr::pull(n)
+pac_int <- D$sens |> dplyr::filter(nivel %in% c("frouxa","estrita"))
+pac_lo  <- min(pac_int$n_pacientes); pac_hi <- max(pac_int$n_pacientes)
+sih_aih <- dplyr::n_distinct(D$sih$n_aih)
+sim_n   <- nrow(D$sim)
+```
+
+A **Hidradenite Supurativa (HS)** — ou acne inversa — é uma doença inflamatória
+crônica da pele, subdiagnosticada, de predomínio em **mulheres adultas jovens**, com
+forte impacto na qualidade de vida e peso **cirúrgico** e de **alto custo**
+(adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — **SIA-PA**
+(ambulatorial), **SIH-RD** (internações) e **SIM-DO** (mortalidade) — no período
+**2020–2025**, usando captura **restrita** (`L732`).
+
+```{r kpis}
+#| output: asis
+cat(kpi_row(list(
+  c(fmt_n(sia_n), "registros ambulatoriais (SIA)"),
+  c(paste0(fmt_n(pac_lo), "–", fmt_n(pac_hi)), "pseudo-pacientes (SIA, intervalo)"),
+  c(fmt_n(sih_aih), "internações (AIH distintas, SIH)"),
+  c(fmt_n(sim_n), "óbitos com HS (SIM, 2020–2025)")
+)))
+```
+
+::: {.callout-nota}
+**Como ler estes números.** São indicadores de **detecção e uso de serviço**, não de
+**prevalência** — a HS não tem fonte censitária. As três bases medem coisas distintas
+e **não se somam**. Sem identificador de paciente no DATASUS público, "pessoas" no SIA
+são uma **aproximação probabilística** reportada como intervalo (ver
+[Ambulatorial](sia_hs.qmd)). Detalhes de método e limitações: `datasus_hs.md`.
+:::
+
+## Tendência da carga registrada (2020–2025)
+
+```{r trend}
+serie_sia <- D$sia |> dplyr::select(ano) |> dplyr::collect() |> dplyr::count(ano)
+serie_sih <- D$sih |> dplyr::count(ano)
+serie_sim <- D$sim |> dplyr::count(ano)
+# eixo Y duplo: SIA (esquerda) é ~250× maior que SIH/SIM (direita)
+fac <- max(serie_sia$n) / max(c(serie_sih$n, serie_sim$n))
+
+ggplot(mapping = aes(ano)) +
+  geom_line(data = serie_sia, aes(y = n, color = "SIA (ambulatorial)"), linewidth = 1.2) +
+  geom_point(data = serie_sia, aes(y = n, color = "SIA (ambulatorial)"), size = 2.3) +
+  geom_line(data = serie_sih, aes(y = n*fac, color = "SIH (internações)"), linewidth = 1.2) +
+  geom_point(data = serie_sih, aes(y = n*fac, color = "SIH (internações)"), size = 2.3) +
+  geom_line(data = serie_sim, aes(y = n*fac, color = "SIM (óbitos)"), linewidth = 1.2) +
+  geom_point(data = serie_sim, aes(y = n*fac, color = "SIM (óbitos)"), size = 2.3) +
+  scale_y_continuous(
+    name = "SIA — registros ambulatoriais", labels = scales::label_number(big.mark = "."),
+    sec.axis = sec_axis(~ . / fac, name = "SIH / SIM — registros",
+                        labels = scales::label_number(big.mark = "."))) +
+  scale_x_continuous(breaks = ANOS) +
+  scale_color_manual(values = c("SIA (ambulatorial)" = "#5C3F6C",
+                                "SIH (internações)" = "#A87FA8",
+                                "SIM (óbitos)" = "#D8B4C4")) +
+  labs(x = NULL, color = NULL, title = "Carga registrada de HS por base, 2020–2025",
+       subtitle = "Eixo esquerdo: SIA (~250× maior). Eixo direito: SIH e SIM. 2020–2021 sob efeito da pandemia.") +
+  theme_hs() +
+  theme(axis.title.y.left = element_text(color = "#5C3F6C"),
+        axis.title.y.right = element_text(color = "#A87FA8"))
+```
+
+A produção ambulatorial cresce de forma acentuada no período — efeito dominado por
+**aumento de detecção/registro** (e incorporação do biológico), não por mudança
+populacional. **2020–2021** estão sob efeito da pandemia (queda de procedimentos
+eletivos/dermatológicos) e devem ser lidos como período anômalo.
+
+## Onde a HS é detectada — taxa ambulatorial padronizada
+
+```{r mapa}
+num_sia <- D$sia |> dplyr::select(ano, uf_pcn, sexo, faixa) |> dplyr::collect() |>
+  contar_estrato(col_uf = "uf_pcn")
+tx_uf <- taxas_padronizadas(num_sia, D$pop, grupos = "uf")
+mapa_uf(dplyr::select(tx_uf, uf, taxa_pad), valor = "taxa_pad",
+        titulo = "Taxa de detecção ambulatorial de HS, padronizada por idade e sexo",
+        legenda = "por 100 mil\n(pessoa-anos)")
+```
+
+A detecção concentra-se em **capitais e no Sul/Sudeste**, padrão fortemente
+influenciado pela **oferta de serviços dermatológicos** — a variação geográfica mede
+em grande parte **acesso**, não doença (ver [Ambulatorial](sia_hs.qmd) e o cruzamento
+com a rede assistencial).
+
+## Navegação
+
+- **[Ambulatorial (SIA)](sia_hs.qmd)** — perfil, taxas padronizadas, pseudo-pacientes, inequidades.
+- **[Internações (SIH)](sih_hs.qmd)** — peso cirúrgico, permanência, comorbidades, custos.
+- **[Mortalidade (SIM)](sim_hs.qmd)** — exploratório, N baixo, HS quase invisível.

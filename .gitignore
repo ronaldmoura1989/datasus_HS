@@ -1,0 +1,36 @@
+# === Dados e logs (regeneráveis pelos scripts; grandes/sensíveis) ===
+/data/
+/logs/
+
+# === R ===
+.Rhistory
+.RData
+.Rapp.history
+.Rproj.user/
+*.Rproj
+*_rsconnect/
+*.rds
+*.RData
+
+# === Quarto: cache e intermediários (NÃO ignorar docs/ — site publicado) ===
+/.quarto/
+/qmd/.quarto/
+/qmd/_freeze/
+/qmd/*_cache/
+/qmd/*_files/
+*.knit.md
+*.utf8.md
+
+# === renv (versionar apenas renv.lock) ===
+renv/library/
+renv/staging/
+renv/local/
+renv/cellar/
+renv/python/
+renv/sandbox/
+
+# === SO / editores ===
+.DS_Store
+Thumbs.db
+.Rproj.user
+.vscode/

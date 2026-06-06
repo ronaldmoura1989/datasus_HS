@@ -1,0 +1,205 @@
+[
+  {
+    "objectID": "sia_hs.html",
+    "href": "sia_hs.html",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "",
+    "text": "158.850\n\n\nregistros ambulatoriais\n\n\n\n\n25.325–30.675\n\n\npseudo-pacientes\n\n\n\n\n59,1%\n\n\nregistros do sexo feminino\n\n\n\n\n20-24\n\n\nfaixa etária modal\nO SIA-PA capta a produção ambulatorial com pa_cidpri == L732. São 158.850 registros em 2020–2025. A unidade é o registro de procedimento, não a pessoa — ver pseudo-pacientes."
+  },
+  {
+    "objectID": "sia_hs.html#perfil-demográfico",
+    "href": "sia_hs.html#perfil-demográfico",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Perfil demográfico",
+    "text": "Perfil demográfico\n\n\n\n\n\n\n\n\n\n\n\nraca_corregistros%Branca71.82945,2Parda58.18436,6Não informada14.0978,9Preta10.7796,8Amarela3.9402,5Indígena210,0Raça/cor 99 (sem informação) reclassificada como 'Não informada'."
+  },
+  {
+    "objectID": "sia_hs.html#taxas-de-detecção-padronizadas",
+    "href": "sia_hs.html#taxas-de-detecção-padronizadas",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Taxas de detecção padronizadas",
+    "text": "Taxas de detecção padronizadas\nTaxas por 100 mil, padronizadas por idade e sexo (direta, padrão Censo 2022, IC gama). São taxas de detecção/uso, não de prevalência.\n\n\n\n\n\n\n\n\n\n\n\nUFEventosTaxa brutaTaxa padronizadaIC95%Centro-OesteDF4.94429,327,927,2–28,7GO4.84211,511,210,9–11,5MS1.5669,59,69,1–10,1MT1.8928,68,68,2–9,0NordesteCE11.54622,021,521,1–21,9RN2.61013,213,112,6–13,6PB3.06712,913,012,6–13,5SE1.49411,311,010,5–11,6PE4.5688,48,48,2–8,7AL1.2036,46,46,1–6,8BA4.1004,94,94,7–5,0PI8704,54,44,1–4,7MA1.4283,53,53,3–3,7NorteAP2355,35,24,6–6,0AM1.1594,95,04,7–5,3PA2.0944,34,44,2–4,6AC2124,34,13,6–4,8TO3664,04,03,6–4,5RR912,42,21,8–2,8RO1371,41,41,2–1,7SudesteSP53.91120,320,220,1–20,4ES3.57415,615,915,4–16,4RJ12.75713,313,413,2–13,7MG10.2218,38,48,2–8,5SulPR15.73523,023,222,9–23,6SC8.37018,418,017,7–18,4RS5.8589,09,39,1–9,6Padronização direta idade×sexo, padrão Censo 2022. Linhas em destaque = região. A variação reflete fortemente a oferta de serviços (acesso), não só doença.\n\n\n\nEstrato-alvo: mulheres 20–39"
+  },
+  {
+    "objectID": "sia_hs.html#inequidade-geográfica-evolução-por-estado",
+    "href": "sia_hs.html#inequidade-geográfica-evolução-por-estado",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Inequidade geográfica: evolução por estado",
+    "text": "Inequidade geográfica: evolução por estado\n\n\n\n\n\n\n\n\n\nO mapa de calor expõe a concentração persistente da produção ambulatorial em poucos estados (SP, PR, e capitais), com vazios ou contagens muito baixas em boa parte do Norte e Nordeste ao longo de todos os anos — coerente com barreira de acesso e subdetecção, não ausência de doença. Note ainda o degrau de 2020–2021 (pandemia) e a aceleração subsequente, puxada pela difusão do biológico.\n\nOferta de dermatologistas e o confundimento por acesso\nA detecção da HS depende de haver quem a diagnostique. Cruzando a densidade de dermatologistas (CNES, CBO 223117/225135, por 100 mil habitantes) com a taxa de detecção padronizada, por UF, o padrão de acesso fica explícito.\n\n\n\n\n\n\n\n\n\nA associação positiva entre oferta de dermatologia e detecção de HS indica que a variação geográfica das taxas mede, em boa parte, capacidade diagnóstica instalada — não a distribuição real da doença. UFs com poucos dermatologistas tendem a registrar menos HS, reforçando a hipótese de subdetecção por barreira de acesso no interior do país (ver Considerações finais)."
+  },
+  {
+    "objectID": "sia_hs.html#pseudo-pacientes",
+    "href": "sia_hs.html#pseudo-pacientes",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Pseudo-pacientes",
+    "text": "Pseudo-pacientes\nSem identificador de paciente no SIA público, estimamos pessoas por record linkage de quase-identificadores (sexo, ano de nascimento, município, raça/cor). O resultado é um intervalo, não um número exato (método: datasus_hs.md §5.1).\n\n\nNívelRegraPseudo-pacientesRegistros/pacienteregistro_eventosem de-dup158.8501,0estritasexo+raça+município+ano_nasc exato30.6755,2intermediariaestrita + janela ano_nasc ±1 (CENTRAL)27.5685,8frouxasexo+município+ano_nasc±1 (sem raça)25.3256,3Intervalo [frouxa; estrita]. Colisão domina em municípios grandes; fragmentação na cauda crônica. Não é contagem oficial de pacientes.\n\n\n\nLeitura. De 158.850 registros para ~25.325–30.675 pseudo-pacientes (≈ 5–6 registros por pessoa). Em capitais a desambiguação é fundamentalmente limitada pela colisão de atributos — as taxas seguem sendo de detecção/uso."
+  },
+  {
+    "objectID": "sia_hs.html#quem-maneja-e-com-quais-procedimentos",
+    "href": "sia_hs.html#quem-maneja-e-com-quais-procedimentos",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Quem maneja e com quais procedimentos",
+    "text": "Quem maneja e com quais procedimentos\n\n\nCódigoProcedimentoRegistros%0604380127Adalimumabe 40 mg injetavel ( por seringa preenchida)( biossimilar a)66.00041,50604380062Adalimumabe 40 mg injetavel (por seringa preenchida)52.82133,30604380135Adalimumabe 40 mg injetavel (por seringa preenchida) (biossimilar b)20.51112,90301010072Consulta medica em atencao especializada5.7773,60301060096Atendimento medico em unidade de pronto atendimento4.1852,60301060118Acolhimento com classificacao de risco2.0861,30203020030Exame anatomo-patologico para congelamento / parafina por peca cirurgica ou por biopsia (exceto col8050,50301060061Atendimento de urgencia em atencao especializada7300,50301100012Administracao de medicamentos na atencao especializada.6750,40301060029Atendimento de urgencia c/ observacao ate 24 horas em atencao especializada6560,4Nomes obtidos via microdatasus::fetch_sigtab(). Três apresentações de adalimumabe (0604380…) concentram a maior parte da produção.\n\n\n\nA produção ambulatorial de HS é dominada pelo alto custo. Cerca de 87,7% dos registros são dispensação de adalimumabe (procedimentos 0604380…, biológico do CEAF). Implicações: (a) o “crescimento da detecção” no SIA reflete em grande parte o avanço do biológico, não apenas diagnóstico novo; (b) ao contrário do previsto, o eixo de custo do adalimumabe é rastreável aqui via pa_proc_id/pa_valapr (e não exige a base APAC); (c) os ~5–6 registros por pseudo-paciente correspondem, sobretudo, a dispensações mensais do medicamento.\n\n\nTransição para biossimilares por estado\nOs três procedimentos de adalimumabe correspondem ao referência e a dois biossimilares (A e B). Entre 2022 e 2025 o SUS migrou rapidamente do medicamento de referência para os biossimilares — uma substituição com forte impacto de custo.\n\n\n\n\n\n\n\n\n\nA migração é nítida e quase universal: estados que em 2020–2021 dispensavam só o referência passam, até 2025, a usar majoritariamente biossimilares — com ritmos distintos entre UFs (algumas adotam o Biossimilar A já em 2023; outras mantêm o referência por mais tempo). Estados com poucas células refletem baixo volume de dispensação (acesso restrito ao biológico), não preferência por uma apresentação."
+  },
+  {
+    "objectID": "sia_hs.html#limitações",
+    "href": "sia_hs.html#limitações",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Limitações",
+    "text": "Limitações\n\nCaptura restrita (L732) → subestima HS leve (codificada como abscesso L02x); viés de gravidade (o capturado tende a HS moderada/grave); pa_munpcn pode mudar (fragmentação); 2020–2021 sob pandemia; taxas de detecção/uso, não prevalência. Detalhes: datasus_hs.md §9."
+  },
+  {
+    "objectID": "consideracoes_finais.html",
+    "href": "consideracoes_finais.html",
+    "title": "Considerações finais",
+    "section": "",
+    "text": "A análise dos microdados do DATASUS (SIA-PA, SIH-RD e SIM-DO, 2020–2025) para a Hidradenite Supurativa (CID-10 L73.2) compõe um retrato coerente, ainda que necessariamente parcial, de uma doença crônica, debilitante e historicamente subdimensionada no SUS. O eixo ambulatorial é, disparado, o centro de gravidade dos dados: cerca de 88% dos registros do SIA-HS correspondem à dispensação de adalimumabe, deslocando o significado das nossas medidas. O que tabulamos não é prevalência, mas detecção e uso de serviços — em particular, uso do componente de alto custo. Os denominadores são populações em risco aproximadas, não casos confirmados, e o número de pessoas por trás dos registros (estimativa probabilística de ~25 a 31 mil pseudo-pacientes, na ausência de identificador longitudinal no dado público) deve ser lido como ordem de grandeza, não como contagem.\nDois achados novos qualificam essa síntese. Primeiro, a confirmação de que a geografia da detecção mede capacidade diagnóstica instalada, e não distribuição real da doença. Segundo, a leitura, agora possível nos microdados, de uma política de substituição por biossimilares em curso no componente de alto custo — um sinal de que o dado administrativo, apesar de suas limitações clínicas, captura com nitidez decisões de gestão farmacêutica.\nOs demais eixos reforçam o caráter ambulatorial e de alto custo do problema: o SIH-RD registra apenas 631 internações no período, com comorbidades provavelmente subnotificadas (preenchimento de diagnósticos secundários em torno de 16%), e o SIM-DO confirma que a HS é quase invisível na mortalidade (96 óbitos com menção, apenas 1 como causa básica). A HS pesa no SUS pelo custo continuado do tratamento e pela carga de adoecimento crônico, não pela letalidade."
+  },
+  {
+    "objectID": "consideracoes_finais.html#síntese",
+    "href": "consideracoes_finais.html#síntese",
+    "title": "Considerações finais",
+    "section": "",
+    "text": "A análise dos microdados do DATASUS (SIA-PA, SIH-RD e SIM-DO, 2020–2025) para a Hidradenite Supurativa (CID-10 L73.2) compõe um retrato coerente, ainda que necessariamente parcial, de uma doença crônica, debilitante e historicamente subdimensionada no SUS. O eixo ambulatorial é, disparado, o centro de gravidade dos dados: cerca de 88% dos registros do SIA-HS correspondem à dispensação de adalimumabe, deslocando o significado das nossas medidas. O que tabulamos não é prevalência, mas detecção e uso de serviços — em particular, uso do componente de alto custo. Os denominadores são populações em risco aproximadas, não casos confirmados, e o número de pessoas por trás dos registros (estimativa probabilística de ~25 a 31 mil pseudo-pacientes, na ausência de identificador longitudinal no dado público) deve ser lido como ordem de grandeza, não como contagem.\nDois achados novos qualificam essa síntese. Primeiro, a confirmação de que a geografia da detecção mede capacidade diagnóstica instalada, e não distribuição real da doença. Segundo, a leitura, agora possível nos microdados, de uma política de substituição por biossimilares em curso no componente de alto custo — um sinal de que o dado administrativo, apesar de suas limitações clínicas, captura com nitidez decisões de gestão farmacêutica.\nOs demais eixos reforçam o caráter ambulatorial e de alto custo do problema: o SIH-RD registra apenas 631 internações no período, com comorbidades provavelmente subnotificadas (preenchimento de diagnósticos secundários em torno de 16%), e o SIM-DO confirma que a HS é quase invisível na mortalidade (96 óbitos com menção, apenas 1 como causa básica). A HS pesa no SUS pelo custo continuado do tratamento e pela carga de adoecimento crônico, não pela letalidade."
+  },
+  {
+    "objectID": "consideracoes_finais.html#impacto-no-sus-e-inequidade-de-acesso",
+    "href": "consideracoes_finais.html#impacto-no-sus-e-inequidade-de-acesso",
+    "title": "Considerações finais",
+    "section": "Impacto no SUS e inequidade de acesso",
+    "text": "Impacto no SUS e inequidade de acesso\nA distribuição territorial da detecção é o achado de saúde pública mais consequente — e o mais traiçoeiro de interpretar. O cruzamento da densidade de dermatologistas por UF (fonte externa: CNES-PF, CBO 223117/225135) com a taxa de detecção padronizada de HS produz uma correlação de Pearson r = 0,71, forte e positiva. Em outras palavras: onde há mais dermatologistas, detecta-se mais HS — o que é esperado se a “taxa” mede oferta, e não doença.\nA magnitude da desigualdade de oferta é expressiva. A densidade de dermatologistas varia cerca de 6 vezes entre os extremos: aproximadamente 11 por 100 mil no DF e no RJ, e 9,6 em SP, contra ~1,8 no MA e ~2,0 no AC, RR e AP. O heatmap UF × ano torna esse padrão visível e crônico: a produção concentra-se de forma persistente em São Paulo, no Paraná e nas capitais, com vazios assistenciais que se repetem ano após ano no interior do Norte e Nordeste, sem sinal de convergência ao longo da série.\n\nA leitura epidemiológica correta inverte a aparência do dado. As menores “taxas” do Norte e Nordeste não indicam menos doença, mas menos porta de entrada diagnóstica. O r = 0,71 transforma uma suspeita metodológica em evidência quantitativa de subdetecção por barreira de acesso: a HS existe nessas regiões, mas não é diagnosticada, codificada e tratada na mesma proporção. A inequidade, portanto, é dupla — de acesso ao diagnóstico especializado e, em consequência, ao tratamento de alto custo.\n\nEssa dependência da oferta especializada para o diagnóstico atravessa todos os achados: o subdiagnóstico provável (HS frequentemente codificada como abscesso, L02x), o viés de gravidade da captura restrita a L73.2, e o atraso diagnóstico — clinicamente reconhecido, mas não mensurável neste desenho por ausência de seguimento individual."
+  },
+  {
+    "objectID": "consideracoes_finais.html#a-transição-para-biossimilares-o-que-o-alto-custo-revela",
+    "href": "consideracoes_finais.html#a-transição-para-biossimilares-o-que-o-alto-custo-revela",
+    "title": "Considerações finais",
+    "section": "A transição para biossimilares: o que o alto custo revela",
+    "text": "A transição para biossimilares: o que o alto custo revela\nO detalhamento das apresentações de adalimumabe revela um movimento de gestão que é, em si, um achado. As dispensações distribuem-se entre o produto referência (procedimento 0604380062) e dois biossimilares (Biossimilar A, 0604380127; Biossimilar B, 0604380135), e a substituição foi rápida e quase universal:\n\nEm 2020–2021, praticamente toda a dispensação era do produto referência.\nO referência despenca de 16.401 dispensações em 2022 para 1.496 em 2025.\nO Biossimilar A sobe para 35.112 dispensações em 2025, assumindo o papel central.\n\nA migração é heterogênea entre estados: alguns adotam o biossimilar já em 2023, MA e RN deslocam-se mais para o Biossimilar B, e estados de pequeno volume apresentam padrões menos estáveis. Trata-se de um caso exemplar de política de economia farmacêutica via biossimilar visível diretamente nos microdados — um uso secundário do dado administrativo que vai além da epidemiologia e alcança a avaliação de tecnologias e a gestão do CEAF."
+  },
+  {
+    "objectID": "consideracoes_finais.html#perspectivas-e-oportunidades-de-acesso",
+    "href": "consideracoes_finais.html#perspectivas-e-oportunidades-de-acesso",
+    "title": "Considerações finais",
+    "section": "Perspectivas e oportunidades de acesso",
+    "text": "Perspectivas e oportunidades de acesso\n\nConsolidar e monitorar a substituição por biossimilar como ganho de eficiência. A migração para biossimilares amplia a sustentabilidade do tratamento de alto custo e pode liberar recursos para ampliar acesso. Recomenda-se transformá-la em indicador de monitoramento contínuo (proporção referência vs. biossimilar por UF e ano) e acoplar farmacovigilância de troca (switch), acompanhando manutenção de resposta e eventos adversos após a substituição — especialmente nas trocas entre biossimilares (A↔︎B), menos respaldadas por evidência do que a troca referência→biossimilar.\nUsar a densidade de dermatologistas (CNES) como indicador de equidade. A própria variável que confunde a taxa de detecção pode ser convertida em instrumento de monitoramento: razão de dermatologistas por 100 mil habitantes por UF e região de saúde, pactuada como marcador de capacidade diagnóstica instalada. Onde a densidade é baixa e a detecção também, presume-se demanda reprimida, não ausência de doença.\nTeledermatologia para o gargalo de oferta. Diante de uma desigualdade de 6× na oferta especializada, a teledermatologia (teleconsultoria e telediagnóstico, integráveis à RNDS e ao Meu SUS Digital) é a via mais factível para encurtar a distância entre o paciente do interior do Norte/Nordeste e o diagnóstico, sem depender da fixação de especialistas em todos os municípios.\nQualificar a codificação na ponta. Reduzir a subcodificação (L02x → L73.2) por meio de capacitação e de regras de qualificação no e-SUS APS melhoraria simultaneamente a detecção e a confiabilidade da vigilância — pré-requisito para qualquer estimativa de carga mais próxima da realidade.\nBuscar o identificador longitudinal. A integração via CNS/RNDS, sob salvaguardas da LGPD (dado pessoal sensível, anonimização e base legal para uso secundário), permitiria, no futuro, mensurar atraso diagnóstico, recidiva e trajetória de tratamento — hoje inacessíveis no dado público agregado."
+  },
+  {
+    "objectID": "consideracoes_finais.html#considerações-finais",
+    "href": "consideracoes_finais.html#considerações-finais",
+    "title": "Considerações finais",
+    "section": "Considerações finais",
+    "text": "Considerações finais\nOs microdados do DATASUS retratam a HS no SUS como uma doença ambulatorial, crônica e de alto custo, cujo principal achado de gestão é a já consolidada transição para biossimilares de adalimumabe, e cujo principal achado de saúde pública é uma inequidade de detecção fortemente determinada pela oferta de dermatologistas (r = 0,71; variação de ~6× entre UFs), com vazios persistentes no interior do Norte e Nordeste.\nÉ imprescindível reafirmar os limites do que foi medido: trabalhamos com detecção e uso, não prevalência; com registros, não pessoas; com captura restrita a L73.2, sujeita a viés de gravidade e à descontinuidade imposta pela pandemia em 2020–2021. As referências ao contexto normativo (PCDT da HS e fluxos do CEAF) permanecem [VERIFICAR] quanto a números e vigência antes de qualquer afirmação definitiva.\n\nA mensagem central, contudo, é robusta a essas ressalvas: no SUS, detectar HS depende de ter a quem detectar — e a desigualdade na oferta diagnóstica, somada à incipiente migração para biossimilares, define tanto o problema de equidade quanto a oportunidade de eficiência que esta análise coloca diante da gestão."
+  },
+  {
+    "objectID": "sih_hs.html",
+    "href": "sih_hs.html",
+    "title": "Internações (SIH-RD)",
+    "section": "",
+    "text": "631\n\n\ninternações (AIH distintas)\n\n\n\n\n2,0 dias\n\n\npermanência mediana\n\n\n\n\n49,7%\n\n\ninternações de urgência\n\n\n\n\nR$ 345.233\n\n\ngasto hospitalar total\nA HS internada tende a ser moderada/grave (drenagem, exérese, reconstrução). São 631 AIH com diag_princ == L732 em 2020–2025 — apenas o sabor diagnóstico principal (a extração não recupera HS como diagnóstico secundário)."
+  },
+  {
+    "objectID": "sih_hs.html#carga-e-perfil",
+    "href": "sih_hs.html#carga-e-perfil",
+    "title": "Internações (SIH-RD)",
+    "section": "Carga e perfil",
+    "text": "Carga e perfil"
+  },
+  {
+    "objectID": "sih_hs.html#permanência-hospitalar",
+    "href": "sih_hs.html#permanência-hospitalar",
+    "title": "Internações (SIH-RD)",
+    "section": "Permanência hospitalar",
+    "text": "Permanência hospitalar"
+  },
+  {
+    "objectID": "sih_hs.html#comorbidades-registradas",
+    "href": "sih_hs.html#comorbidades-registradas",
+    "title": "Internações (SIH-RD)",
+    "section": "Comorbidades registradas",
+    "text": "Comorbidades registradas\nBuscadas nos campos secundários (diag_secun, diagsec1–9).\n\n\n\n\n\n\n\n\n\n\nForte subnotificação. Apenas ~16% das AIH-HS têm qualquer diagnóstico secundário preenchido (84% nenhum), com completude muito heterogênea por UF (SP ~32%, vários estados 0%). Os percentuais acima são piso subestimado e enviesado — leia como “comorbidade registrada na AIH”, não prevalência. datasus_hs.md §4."
+  },
+  {
+    "objectID": "sih_hs.html#custos-hospitalares",
+    "href": "sih_hs.html#custos-hospitalares",
+    "title": "Internações (SIH-RD)",
+    "section": "Custos hospitalares",
+    "text": "Custos hospitalares\n\n\nAnoInternaçõesGasto total (R$)Custo médio/AIH (R$)2,0204716.8333582,0214220.3734852,0229044.4654942,02310141.3484092,02414078.5875612,025211143.627681val_tot (SIH). Não inclui o alto custo ambulatorial (adalimumabe/APAC), ausente nesta extração do SIA-PA."
+  },
+  {
+    "objectID": "sih_hs.html#taxa-de-internação-padronizada",
+    "href": "sih_hs.html#taxa-de-internação-padronizada",
+    "title": "Internações (SIH-RD)",
+    "section": "Taxa de internação padronizada",
+    "text": "Taxa de internação padronizada"
+  },
+  {
+    "objectID": "sih_hs.html#limitações",
+    "href": "sih_hs.html#limitações",
+    "title": "Internações (SIH-RD)",
+    "section": "Limitações",
+    "text": "Limitações\n\nSó o sabor diagnóstico principal (HS em secundário não recuperável); comorbidade subnotificada (§4); sem alto custo ambulatorial (sem APAC); N baixo → taxas instáveis; 2020–2021 sob pandemia. datasus_hs.md §9."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "",
+    "text": "A Hidradenite Supurativa (HS) — ou acne inversa — é uma doença inflamatória crônica da pele, subdiagnosticada, de predomínio em mulheres adultas jovens, com forte impacto na qualidade de vida e peso cirúrgico e de alto custo (adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — SIA-PA (ambulatorial), SIH-RD (internações) e SIM-DO (mortalidade) — no período 2020–2025, usando captura restrita (L732)."
+  },
+  {
+    "objectID": "index.html#tendência-da-carga-registrada-20202025",
+    "href": "index.html#tendência-da-carga-registrada-20202025",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "Tendência da carga registrada (2020–2025)",
+    "text": "Tendência da carga registrada (2020–2025)\n\n\n\n\n\n\n\n\n\nA produção ambulatorial cresce de forma acentuada no período — efeito dominado por aumento de detecção/registro (e incorporação do biológico), não por mudança populacional. 2020–2021 estão sob efeito da pandemia (queda de procedimentos eletivos/dermatológicos) e devem ser lidos como período anômalo."
+  },
+  {
+    "objectID": "index.html#onde-a-hs-é-detectada-taxa-ambulatorial-padronizada",
+    "href": "index.html#onde-a-hs-é-detectada-taxa-ambulatorial-padronizada",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "Onde a HS é detectada — taxa ambulatorial padronizada",
+    "text": "Onde a HS é detectada — taxa ambulatorial padronizada\n\n\n\n\n\n\n\n\n\nA detecção concentra-se em capitais e no Sul/Sudeste, padrão fortemente influenciado pela oferta de serviços dermatológicos — a variação geográfica mede em grande parte acesso, não doença (ver Ambulatorial e o cruzamento com a rede assistencial)."
+  },
+  {
+    "objectID": "index.html#navegação",
+    "href": "index.html#navegação",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "Navegação",
+    "text": "Navegação\n\nAmbulatorial (SIA) — perfil, taxas padronizadas, pseudo-pacientes, inequidades.\nInternações (SIH) — peso cirúrgico, permanência, comorbidades, custos.\nMortalidade (SIM) — exploratório, N baixo, HS quase invisível."
+  },
+  {
+    "objectID": "sim_hs.html",
+    "href": "sim_hs.html",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "",
+    "text": "96\n\n\nóbitos com HS (qualquer campo)\n\n\n\n\n1\n\n\nóbitos com HS como causa básica\n\n\n\n\n50,1 anos\n\n\nidade média ao óbito\n\n\n\n\n46,9%\n\n\ndo sexo feminino"
+  },
+  {
+    "objectID": "sim_hs.html#distribuição-temporal-e-fonte",
+    "href": "sim_hs.html#distribuição-temporal-e-fonte",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "Distribuição temporal e fonte",
+    "text": "Distribuição temporal e fonte"
+  },
+  {
+    "objectID": "sim_hs.html#onde-a-hs-aparece-na-declaração-de-óbito",
+    "href": "sim_hs.html#onde-a-hs-aparece-na-declaração-de-óbito",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "Onde a HS aparece na Declaração de Óbito",
+    "text": "Onde a HS aparece na Declaração de Óbito\n\n\nposicaoobitos%Causa básica11,0Causa contribuinte (linhas)9599,0HS é quase sempre causa contribuinte, não básica — coerente com mortalidade por causas associadas (sepse, comorbidades), não pela HS em si."
+  },
+  {
+    "objectID": "sim_hs.html#perfil-por-sexo-e-idade",
+    "href": "sim_hs.html#perfil-por-sexo-e-idade",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "Perfil por sexo e idade",
+    "text": "Perfil por sexo e idade"
+  },
+  {
+    "objectID": "sim_hs.html#limitações",
+    "href": "sim_hs.html#limitações",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "Limitações",
+    "text": "Limitações\n\nSubnotificação quase total da HS como entidade na mortalidade; N muito baixo inviabiliza taxas; 2025 preliminar; mortalidade reflete causas associadas, não a HS diretamente. Exploratório por natureza. datasus_hs.md §9."
+  }
+]

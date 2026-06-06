@@ -1,0 +1,35 @@
+/*-- scss:defaults --*/
+// Paleta do projeto HS (rosé → roxo) — CLAUDE.md §8
+$roxo-escuro:  #5C3F6C;
+$roxo-medio:   #816095;
+$rose-claro:   #E9CDC9;
+$roxo-claro:   #A87FA8;
+$rose-medio:   #D8B4C4;
+$roxo-prof:    #3E2A4D;
+
+$primary:      $roxo-escuro;
+$secondary:    $roxo-medio;
+$link-color:   $roxo-medio;
+$body-color:   #2b2330;
+
+$font-family-sans-serif: "Source Sans Pro", -apple-system, system-ui, sans-serif;
+$headings-font-weight: 600;
+
+/*-- scss:rules --*/
+h1, h2, h3 { color: $roxo-escuro; }
+.navbar { font-weight: 600; }
+
+// Cartões de KPI
+.kpi-row { display: flex; flex-wrap: wrap; gap: .9rem; margin: 1.2rem 0; }
+.kpi-card {
+  flex: 1 1 160px; padding: 1rem 1.1rem; border-radius: 12px;
+  background: linear-gradient(135deg, $rose-claro 0%, #ffffff 90%);
+  border: 1px solid rgba(92,63,108,.18);
+}
+.kpi-card .v { font-size: 1.9rem; font-weight: 700; color: $roxo-escuro; line-height: 1.1; }
+.kpi-card .l { font-size: .82rem; color: #5b5165; margin-top: .25rem; }
+
+.callout-nota {
+  border-left: 4px solid $roxo-medio; background: rgba(216,180,196,.16);
+  padding: .6rem .9rem; border-radius: 6px; font-size: .92rem;
+}
