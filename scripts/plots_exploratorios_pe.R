@@ -34,8 +34,8 @@ serie <- bind_rows(nat, pe) |>
   mutate(local = factor(local, levels = c("Brasil","Pernambuco")))
 
 p1 <- ggplot(serie, aes(ano, taxa_pad, color = local, fill = local)) +
-  geom_ribbon(aes(ymin = ic_inf, ymax = ic_sup), alpha = 0.18, color = NA) +
-  geom_line(linewidth = 1.2) +
+  geom_line(linewidth = 1.1) +
+  geom_errorbar(aes(ymin = ic_inf, ymax = ic_sup), width = 0.12, linewidth = 0.7) +
   geom_point(size = 2.6) +
   geom_text(data = filter(serie, ano == max(ano)),
             aes(label = local), hjust = 0, nudge_x = 0.08, vjust = 0.4, size = 3.4,
@@ -46,7 +46,7 @@ p1 <- ggplot(serie, aes(ano, taxa_pad, color = local, fill = local)) +
   coord_cartesian(clip = "off") +
   labs(x = NULL, y = "por 100 mil (padronizada)", color = NULL, fill = NULL,
        title = "Taxa de detecção ambulatorial de HS: Pernambuco vs Brasil",
-       subtitle = "Padronizada por idade e sexo (Censo 2022); faixa = IC 95%.") +
+       subtitle = "Padronizada por idade e sexo (padrão Censo 2022); barras = IC 95% (método gama).") +
   tema() + theme(legend.position = "none")
 
 ggsave(file.path(OUTDIR, "serie-pad-pe-1.png"), p1, width = 8, height = 4.8, dpi = 150, bg = "white")
