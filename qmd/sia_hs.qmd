@@ -110,14 +110,30 @@ ggplot(serie, aes(ano, taxa_pad)) +
 ```
 
 ```{r tab-uf}
-df_uf <- taxas_padronizadas(num, D$pop, grupos = "uf") |>
+raw_uf <- taxas_padronizadas(num, D$pop, grupos = "uf")
+# referência nacional (pool 2020–2025, pessoa-anos) — taxa DIRETA, não média das UFs
+br <- taxas_padronizadas(dplyr::mutate(num, .br = "BR"),
+                         dplyr::mutate(D$pop, .br = "BR"), grupos = ".br")
+fmt_vs <- function(razao) { d <- round(100 * (razao - 1))
+  paste0(ifelse(d > 0, "+", ""), d, "%") }
+
+df_uf <- raw_uf |>
   dplyr::mutate(regiao = mapear_uf_regiao(uf)) |>
   dplyr::arrange(regiao, dplyr::desc(taxa_pad)) |>
   dplyr::transmute(regiao, UF = uf, Eventos = fmt_n(eventos),
                    `Taxa bruta` = fmt_1(taxa_bruta), `Taxa padronizada` = fmt_1(taxa_pad),
-                   `IC95%` = paste0(fmt_1(ic_inf), "–", fmt_1(ic_sup)))
+                   `IC 95%` = paste0(fmt_1(ic_inf), "–", fmt_1(ic_sup)),
+                   `vs Brasil` = fmt_vs(taxa_pad / br$taxa_pad))
+# linha de referência Brasil, no topo
+linha_br <- tibble::tibble(regiao = "Brasil (referência nacional)", UF = "BRASIL",
+                   Eventos = fmt_n(br$eventos), `Taxa bruta` = fmt_1(br$taxa_bruta),
+                   `Taxa padronizada` = fmt_1(br$taxa_pad),
+                   `IC 95%` = paste0(fmt_1(br$ic_inf), "–", fmt_1(br$ic_sup)),
+                   `vs Brasil` = "—")
+df_all <- dplyr::bind_rows(linha_br, df_uf) |>
+  dplyr::mutate(regiao = forcats::fct_inorder(regiao))
 
-flextable::as_grouped_data(df_uf, groups = "regiao") |>
+flextable::as_grouped_data(df_all, groups = "regiao") |>
   flextable::as_flextable(hide_grouplabel = TRUE) |>
   flextable::theme_booktabs() |>
   flextable::bg(part = "header", bg = "#5C3F6C") |>
@@ -126,10 +142,18 @@ flextable::as_grouped_data(df_uf, groups = "regiao") |>
   flextable::bg(i = ~ !is.na(regiao), bg = "#EFE7F0") |>
   flextable::bold(i = ~ !is.na(regiao)) |>
   flextable::color(i = ~ !is.na(regiao), color = "#3E2A4D") |>
+  flextable::bold(j = "UF", i = ~ UF == "BRASIL") |>
+  flextable::color(j = "vs Brasil",
+                   color = function(x) dplyr::case_when(
+                     stringr::str_starts(x, "\\+") ~ "#5C3F6C",
+                     stringr::str_starts(x, "-")  ~ "#A87FA8",
+                     TRUE ~ "#5b5165")) |>
+  flextable::align(j = c("Eventos","Taxa bruta","Taxa padronizada","vs Brasil"),
+                   align = "right", part = "all") |>
   flextable::fontsize(size = 10, part = "all") |>
   flextable::padding(padding = 4, part = "all") |>
-  flextable::set_caption("Taxa de detecção ambulatorial por região e UF (pool 2020–2025, pessoa-anos)") |>
-  flextable::add_footer_lines("Padronização direta idade×sexo, padrão Censo 2022. Linhas em destaque = região. A variação reflete fortemente a oferta de serviços (acesso), não só doença.") |>
+  flextable::set_caption("Taxa de detecção ambulatorial por região e UF, com referência nacional (pool 2020–2025, pessoa-anos)") |>
+  flextable::add_footer_lines("Padronização direta idade×sexo, padrão Censo 2022. 'vs Brasil' = diferença % da taxa padronizada da UF em relação à taxa nacional (azul = acima, lilás = abaixo). A variação reflete fortemente a oferta de serviços (acesso), não só doença.") |>
   flextable::fontsize(size = 8, part = "footer") |>
   flextable::color(color = "#5b5165", part = "footer") |>
   flextable::autofit()
@@ -226,6 +250,55 @@ variação geográfica das taxas mede, em boa parte, **capacidade diagnóstica i
 não a distribuição real da doença. UFs com poucos dermatologistas tendem a registrar
 menos HS, reforçando a hipótese de **subdetecção por barreira de acesso** no interior do
 país (ver [Considerações finais](consideracoes_finais.qmd)).
+
+### O paciente precisa se deslocar? (evasão municipal)
+
+Outra face do acesso é **onde** o paciente é atendido. Comparando o **município de
+residência** (`pa_munpcn`) com o **município do estabelecimento** (`pa_ufmun`),
+classificamos cada atendimento em três situações: no **próprio município**, em **outro
+município do mesmo estado** (evasão intraestadual) ou em **outro estado**.
+
+```{r fluxo-uf}
+#| fig-height: 7.5
+fluxo <- sia |>
+  dplyr::mutate(res = stringr::str_pad(as.character(pa_munpcn), 6, pad = "0"),
+                est = stringr::str_pad(as.character(pa_ufmun), 6, pad = "0")) |>
+  dplyr::filter(!stringr::str_detect(res, "^0+$"), !stringr::str_detect(est, "^0+$"),
+                res != "999999", est != "999999") |>
+  dplyr::mutate(uf = uf_from_mun(res), uf_est = uf_from_mun(est),
+                categoria = dplyr::case_when(
+                  res == est   ~ "No próprio município",
+                  uf == uf_est ~ "Outro município do estado",
+                  TRUE         ~ "Outro estado")) |>
+  dplyr::filter(!is.na(uf), uf %in% UFS) |>
+  dplyr::count(uf, categoria) |>
+  dplyr::group_by(uf) |> dplyr::mutate(prop = n / sum(n)) |> dplyr::ungroup() |>
+  dplyr::mutate(categoria = factor(categoria,
+    levels = c("No próprio município","Outro município do estado","Outro estado")))
+ord <- fluxo |> dplyr::filter(categoria == "No próprio município") |>
+  dplyr::arrange(prop) |> dplyr::pull(uf)
+fluxo <- dplyr::mutate(fluxo, uf = factor(uf, levels = ord))
+
+ggplot(fluxo, aes(prop, uf, fill = categoria)) +
+  geom_col(width = 0.85) +
+  scale_fill_manual(values = c("No próprio município" = "#5C3F6C",
+                               "Outro município do estado" = "#A87FA8",
+                               "Outro estado" = "#E9CDC9")) +
+  scale_x_continuous(labels = scales::percent_format(), expand = c(0, 0)) +
+  labs(x = "Composição dos atendimentos", y = NULL, fill = NULL,
+       title = "Onde o paciente de HS é atendido, por estado de residência",
+       subtitle = "Proporção atendida no próprio município vs. fora dele. Ordenado por % local.") +
+  theme_hs() +
+  theme(panel.grid.major.y = element_blank(), legend.position = "top")
+```
+
+Estados na base do gráfico **deslocam mais pacientes** para outros municípios — em geral
+para polos regionais — o que indica **concentração da oferta** (inclusive da dispensação
+do biológico, que domina o SIA-HS). Já um % muito alto de atendimento no próprio
+município pode ter **duas leituras opostas**: uma rede local capilarizada **ou**, quando
+combinado com **baixa detecção**, acesso concentrado na capital com **interior ausente**
+do dado. A evasão municipal é, portanto, um complemento ao mapa de oferta: mostra que o
+acesso à HS no SUS frequentemente **exige viajar**.
 
 ## Pseudo-pacientes {#pseudo-pacientes}
 
