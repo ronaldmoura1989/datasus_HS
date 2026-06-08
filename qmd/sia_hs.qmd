@@ -61,6 +61,40 @@ sia |>
 Taxas **por 100 mil**, **padronizadas por idade e sexo** (direta, padrão Censo 2022,
 IC gama). São taxas de **detecção/uso**, não de prevalência.
 
+### Como lemos as taxas
+
+::: {.callout-nota}
+**Por que padronizar?** A HS atinge sobretudo **mulheres jovens**. Um estado com
+população mais jovem teria taxa bruta maior *só pela demografia*, mesmo que o risco
+fosse igual — comparar taxas brutas seria injusto. A **padronização direta** responde:
+*"qual seria a taxa de cada estado se todos tivessem a mesma composição de idade e
+sexo?"*, usando uma **população-padrão** comum (aqui, o **Censo 2022 do Brasil**).
+:::
+
+**Como é calculada** (padronização direta, idade × sexo):
+
+1. **Estratificar** — divide-se a população em 34 grupos: 17 faixas etárias × 2 sexos.
+2. **Taxa específica** — em cada grupo: `casos ÷ população do grupo`.
+3. **Aplicar à população-padrão** — `taxa do grupo × população-padrão do grupo` = casos
+   "esperados" se o estado tivesse a estrutura etária do Censo 2022.
+4. **Somar e dividir** pela população-padrão total (× 100 mil):
+
+$$\text{taxa padronizada} = \frac{\sum_i (\text{taxa}_i \times \text{Pop. padrão}_i)}{\sum_i \text{Pop. padrão}_i} \times 100\,000$$
+
+*Exemplo (2 grupos):* se em mulheres 20–40 a taxa é 40/100 mil (pop.-padrão 30 mi) e em
+mulheres 60+ é 5/100 mil (pop.-padrão 20 mi), os casos esperados são 12.000 + 1.000 =
+13.000 sobre 50 mi → **26 por 100 mil**. Esse valor já é comparável entre estados, pois
+todos foram recalculados sobre a **mesma** população de referência.
+
+**Detalhes do projeto:** o cálculo usa `epitools::ageadjust.direct()`; o intervalo de
+confiança vem pelo **método gama (Fay–Feuer)**, robusto a contagens pequenas em alguns
+estratos. A taxa **nacional** é a taxa direta sobre todos os registros do país (ponderada
+pelo volume real), **não** a média simples das 27 UFs.
+
+> ⚠️ A padronização corrige o efeito de **idade e sexo** — mas **não** corrige o efeito
+> do **acesso**. Por isso as taxas seguem sendo de **detecção/uso**, e a forte
+> associação com a oferta de dermatologistas (adiante) permanece.
+
 ```{r serie-pad}
 num <- contar_estrato(sia, col_uf = "uf_pcn")
 serie <- taxas_padronizadas(num, D$pop, grupos = "ano")
