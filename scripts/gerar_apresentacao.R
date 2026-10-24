@@ -3,6 +3,8 @@
 # Esqueleto fiel: gráficos reais (docs/), paleta do projeto, notas do apresentador.
 # Segue o roteiro de apresentacao_HS_15min.md. Editar o visual depois no PowerPoint.
 # Saída: apresentacao_HS_15min.pptx (raiz). Rodar: Rscript scripts/gerar_apresentacao.R
+# ⚠️ OBSOLETO (out/2026): o deck foi editado à mão no PowerPoint; rodar este script
+#    SOBRESCREVE essas edições. Figuras v2: scripts/figuras_apresentacao.R.
 # =============================================================================
 suppressPackageStartupMessages({ library(officer); library(here) })
 here::i_am("scripts/gerar_apresentacao.R")
