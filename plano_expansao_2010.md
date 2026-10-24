@@ -20,9 +20,9 @@
 | E5–E12 | feitas (`scripts/r550/rodar_pipeline_hs.sh`), resultados em `~/Documentos/ronald/datasus_HS/{data,manifest,logs}`; revisões 1–3 abaixo incorporadas no export (normalização pela produção dermatológica; ITS com COVID até 2022, sem 2020–2021 e sem anatomopatológico) | R550-2 |
 | E13 site | feito, opção (a): `scripts/exportar_agregados_hs.R` → `data/export/` (só agregados suprimidos) → `qmd/` reescritos (números por R inline em `qmd/_numeros.R`) + `notas_lancamento.qmd`; renderizado em `docs/` | local |
 | E13 docs | `CLAUDE.md` (§1, §3, §4, §5, §6, nota em §7) e quadro "Atualização v2" no topo de `datasus_hs.md` | local |
-| E13 apresentação | pendente (`apresentacao_HS_15min.*`, `scripts/gerar_apresentacao.R`, `doses_adalimumabe.R`, `mapa_biossimilares.R` ainda leem a v1) | — |
+| E13 apresentação | feita: figuras de `scripts/figuras_apresentacao.R` (só agregados) trocadas dentro do `.pptx` editado à mão, números e notas atualizados; versão manual anterior preservada no commit 0780a1e | local |
 | E13 manuscrito | fora desta linha de trabalho: será editado em sessão separada (Claude Science) a partir de `data/export/` e do site | — |
-| E14 | site pronto para publicar; falta commit/push (aguarda o usuário) | — |
+| E14 | branch `v2-serie-2010-2025` publicado, PR #1 aberto; o site sai ao integrar na `main` | GitHub |
 
 **Bug corrigido na cópia HS do filtro:** no `filtrar_um.R` do EIM, as medidas do denominador
 usam `g("COL")`, que devolve a coluna inteira do arquivo; cada estrato recebia a soma do
