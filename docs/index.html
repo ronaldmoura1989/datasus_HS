@@ -111,6 +111,10 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="./consideracoes_finais.html"> 
 <span class="menu-text">Considerações finais</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./notas_lancamento.html"> 
+<span class="menu-text">Notas de lançamento</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -127,8 +131,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Nesta página</h2>
    
   <ul>
-  <li><a href="#tendência-da-carga-registrada-20202025" id="toc-tendência-da-carga-registrada-20202025" class="nav-link active" data-scroll-target="#tendência-da-carga-registrada-20202025">Tendência da carga registrada (2020–2025)</a></li>
-  <li><a href="#onde-a-hs-é-detectada-taxa-ambulatorial-padronizada" id="toc-onde-a-hs-é-detectada-taxa-ambulatorial-padronizada" class="nav-link" data-scroll-target="#onde-a-hs-é-detectada-taxa-ambulatorial-padronizada">Onde a HS é detectada — taxa ambulatorial padronizada</a></li>
+  <li><a href="#tendência-da-carga-registrada" id="toc-tendência-da-carga-registrada" class="nav-link active" data-scroll-target="#tendência-da-carga-registrada">Tendência da carga registrada</a></li>
+  <li><a href="#onde-a-hs-é-detectada-taxa-clínica-padronizada" id="toc-onde-a-hs-é-detectada-taxa-clínica-padronizada" class="nav-link" data-scroll-target="#onde-a-hs-é-detectada-taxa-clínica-padronizada">Onde a HS é detectada — taxa clínica padronizada</a></li>
   <li><a href="#navegação" id="toc-navegação" class="nav-link" data-scroll-target="#navegação">Navegação</a></li>
   </ul>
 </nav>
@@ -139,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Hidradenite Supurativa no SUS</h1>
-<p class="subtitle lead">Microdados do DATASUS · CID L73.2 · 2020–2025</p>
+<p class="subtitle lead">Microdados do DATASUS · CID L73.2 · 2010–2025</p>
 </div>
 
 
@@ -156,46 +160,46 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>A <strong>Hidradenite Supurativa (HS)</strong> — ou acne inversa — é uma doença inflamatória crônica da pele, subdiagnosticada, de predomínio em <strong>mulheres adultas jovens</strong>, com forte impacto na qualidade de vida e peso <strong>cirúrgico</strong> e de <strong>alto custo</strong> (adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — <strong>SIA-PA</strong> (ambulatorial), <strong>SIH-RD</strong> (internações) e <strong>SIM-DO</strong> (mortalidade) — no período <strong>2020–2025</strong>, usando captura <strong>restrita</strong> (<code>L732</code>).</p>
+<p>A <strong>Hidradenite Supurativa (HS)</strong>, ou acne inversa, é uma doença inflamatória crônica da pele, subdiagnosticada, de predomínio em <strong>adultos jovens</strong>, com peso <strong>cirúrgico</strong> e de <strong>alto custo</strong> (adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — <strong>SIA-PA</strong> (ambulatorial), <strong>SIH-RD</strong> (internações) e <strong>SIM-DO</strong> (mortalidade) — de <strong>2010 a 2025</strong> (SIM definitivo até 2024), com captura <strong>restrita</strong> ao código <code>L732</code>.</p>
 <div class="kpi-row">
 <div class="kpi-card">
 <div class="v">
-158.850
+27.896
 </div>
 <div class="l">
-registros ambulatoriais (SIA)
+atendimentos clínicos (SIA, Σ quantidade)
 </div>
 </div>
 <div class="kpi-card">
 <div class="v">
-25.325–30.675
+4.052
 </div>
 <div class="l">
-pseudo-pacientes (SIA, intervalo)
+pacientes/mês em adalimumabe (2025)
 </div>
 </div>
 <div class="kpi-card">
 <div class="v">
-631
+974
 </div>
 <div class="l">
-internações (AIH distintas, SIH)
+internações (AIH, diagnóstico principal)
 </div>
 </div>
 <div class="kpi-card">
 <div class="v">
-96
+103
 </div>
 <div class="l">
-óbitos com HS (SIM, 2020–2025)
+óbitos com HS em qualquer campo (SIM 2010–2024)
 </div>
 </div>
 </div>
 <div class="callout-nota">
-<p><strong>Como ler estes números.</strong> São indicadores de <strong>detecção e uso de serviço</strong>, não de <strong>prevalência</strong> — a HS não tem fonte censitária. As três bases medem coisas distintas e <strong>não se somam</strong>. Sem identificador de paciente no DATASUS público, “pessoas” no SIA são uma <strong>aproximação probabilística</strong> reportada como intervalo (ver <a href="./sia_hs.html">Ambulatorial</a>). Detalhes de método e limitações: <code>datasus_hs.md</code>.</p>
+<p><strong>Como ler estes números.</strong> São indicadores de <strong>detecção e uso de serviço</strong>, não de <strong>prevalência</strong>. As três bases medem coisas distintas e <strong>não se somam</strong>. No SIA, a HS aparece por <strong>dois canais</strong> que precisam ser lidos em separado: o <strong>clínico</strong> (consultas, exames e pequenas cirurgias com CID) e o <strong>medicamento</strong> (dispensação mensal de adalimumabe, que só existe para a HS a partir de <strong>11/2019</strong>, <code>ref/normativo_hs.md</code>). Sem identificador de paciente no dado público, “pessoas” no SIA são uma <strong>ligação determinística</strong> de registros, reportada como intervalo. Novidades desta versão: <a href="./notas_lancamento.html">Notas de lançamento</a>.</p>
 </div>
-<section id="tendência-da-carga-registrada-20202025" class="level2">
-<h2 class="anchored" data-anchor-id="tendência-da-carga-registrada-20202025">Tendência da carga registrada (2020–2025)</h2>
+<section id="tendência-da-carga-registrada" class="level2">
+<h2 class="anchored" data-anchor-id="tendência-da-carga-registrada">Tendência da carga registrada</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -205,10 +209,10 @@ internações (AIH distintas, SIH)
 </div>
 </div>
 </div>
-<p>A produção ambulatorial cresce de forma acentuada no período — efeito dominado por <strong>aumento de detecção/registro</strong> (e incorporação do biológico), não por mudança populacional. <strong>2020–2021</strong> estão sob efeito da pandemia (queda de procedimentos eletivos/dermatológicos) e devem ser lidos como período anômalo.</p>
+<p>Cada painel tem escala própria — as bases <strong>não</strong> se comparam em magnitude. O canal clínico do SIA começa praticamente vazio por construção: até <strong>2013</strong> a consulta especializada só podia ser registrada em BPA consolidado, <strong>sem CID</strong> (<code>ref/sigtap_hs.csv</code>); por isso as tendências do canal clínico partem de <strong>2014</strong>. Nesse período ele cresce 38,6% (IC 95% 33,1–44,7%) ao ano (2014–2025). Parte disso é <strong>expansão do registro individualizado</strong>: a fração do volume do SIA-PA em instrumento com CID vai de 23,2% (2010) para 49,9% (2025). Mesmo normalizada pela produção individualizada da dermatologia, a detecção de L73.2 sobe de 0,17 para 1,13 por mil procedimentos entre 2014 e 2025 (ver <a href="./sia_hs.html#normalizacao">Ambulatorial</a>).</p>
 </section>
-<section id="onde-a-hs-é-detectada-taxa-ambulatorial-padronizada" class="level2">
-<h2 class="anchored" data-anchor-id="onde-a-hs-é-detectada-taxa-ambulatorial-padronizada">Onde a HS é detectada — taxa ambulatorial padronizada</h2>
+<section id="onde-a-hs-é-detectada-taxa-clínica-padronizada" class="level2">
+<h2 class="anchored" data-anchor-id="onde-a-hs-é-detectada-taxa-clínica-padronizada">Onde a HS é detectada — taxa clínica padronizada</h2>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -218,14 +222,15 @@ internações (AIH distintas, SIH)
 </div>
 </div>
 </div>
-<p>A detecção concentra-se em <strong>capitais e no Sul/Sudeste</strong>, padrão fortemente influenciado pela <strong>oferta de serviços dermatológicos</strong> — a variação geográfica mede em grande parte <strong>acesso</strong>, não doença (ver <a href="./sia_hs.html">Ambulatorial</a> e o cruzamento com a rede assistencial).</p>
+<p>As maiores taxas estão em RJ, SC, SP, BA e PA e as menores em SE, PI, RN, TO e PB — um padrão influenciado pela <strong>oferta de dermatologistas</strong> (correlação entre UFs: Pearson r = 0,62; Spearman ρ = 0,53). A variação geográfica mede em boa parte <strong>acesso</strong>, não doença.</p>
 </section>
 <section id="navegação" class="level2">
 <h2 class="anchored" data-anchor-id="navegação">Navegação</h2>
 <ul>
-<li><strong><a href="./sia_hs.html">Ambulatorial (SIA)</a></strong> — perfil, taxas padronizadas, pseudo-pacientes, inequidades.</li>
-<li><strong><a href="./sih_hs.html">Internações (SIH)</a></strong> — peso cirúrgico, permanência, comorbidades, custos.</li>
+<li><strong><a href="./sia_hs.html">Ambulatorial (SIA)</a></strong> — canais, taxas, série interrompida, tratamento, inequidades.</li>
+<li><strong><a href="./sih_hs.html">Internações (SIH)</a></strong> — dois sabores de caso, peso cirúrgico, comorbidades, custos.</li>
 <li><strong><a href="./sim_hs.html">Mortalidade (SIM)</a></strong> — exploratório, N baixo, HS quase invisível.</li>
+<li><strong><a href="./consideracoes_finais.html">Considerações finais</a></strong> · <strong><a href="./notas_lancamento.html">Notas de lançamento</a></strong></li>
 </ul>
 
 
@@ -639,7 +644,7 @@ internações (AIH distintas, SIH)
       &nbsp;
     </div>   
     <div class="nav-footer-center">
-<p>Microdados DATASUS (SIA-PA, SIH-RD, SIM-DO) · Censo 2022/IBGE · CID L73.2 · 2020–2025. Taxas de detecção/uso, não de prevalência.</p>
+<p>Microdados DATASUS (SIA-PA, SIH-RD, SIM-DO) · Projeção da População IBGE 2024 · CID L73.2 · 2010–2025. Taxas de detecção/uso, não de prevalência. Células &lt; 5 suprimidas.</p>
 </div>
     <div class="nav-footer-right">
       &nbsp;

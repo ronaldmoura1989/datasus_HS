@@ -10,6 +10,25 @@ metodologia de análise dos microdados do DATASUS já validada no projeto de aut
 autismo — que ganhou um denominador populacional com o Censo 2022 — a HS **não tem
 fonte censitária**, o que muda a construção de taxas e exige cautela interpretativa.
 
+> **Atualização v2 (out/2026) — leia antes do resto.** A análise foi expandida para
+> **2010–2025** a partir dos DBC originais (plano e status: `plano_expansao_2010.md`;
+> guia de processamento: `ref/guia_processamento_datasus.md`). Prevalecem sobre o texto
+> abaixo, que descreve o desenho da v1 (2020–2025):
+> - **Definição de caso:** `scripts/hs_lookup.R` — L730/L731 são **diferenciais** (outras
+>   doenças), separados de L738/L739 (**limítrofe**); L02 é envelope (§2).
+> - **SIA em canais:** clínico (BPA-I/APAC sem medicamento, Σ `PA_QTDAPR`) × medicamento
+>   (APAC de adalimumabe, APAC distintas/mês). O adalimumabe **é rastreável** pelo
+>   procedimento da APAC; não depende de `pa_cidpec` (§2, §3, §6.4).
+> - **Denominador:** Projeção da População IBGE, revisão 2024, anual; padrão Brasil 2022
+>   da mesma projeção (substitui a decisão do §5).
+> - **Atos normativos e códigos SIGTAP confirmados:** `ref/normativo_hs.md` e
+>   `ref/sigtap_hs.csv` (substituem as pendências `[VERIFICAR]` do §8). Marco da série
+>   interrompida: **11/2019** (Portaria SAES/MS 1.217/2019).
+> - **Pandemia:** 2020–2022 na sensibilidade principal (§9.11).
+> - **Pseudo-ID:** determinístico, com raça/cor ausente como "NI" e ligação pelo nº da
+>   APAC (§5.1); o probabilístico fica só como sensibilidade futura.
+> - **SIH:** o sabor "qualquer campo" é recuperável na v2 (teto, cresce com o preenchimento).
+
 > **Convenções de marcação:** `[VERIFICAR]` = afirmação que exige confirmação
 > documental na fonte oficial; `[CONFIRMAR via fetch_sigtab()]` = código de
 > procedimento/CBO a validar na competência correta do SIGTAP. Princípio do

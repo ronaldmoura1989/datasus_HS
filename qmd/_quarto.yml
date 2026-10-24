@@ -5,7 +5,7 @@ project:
 
 website:
   title: "Hidradenite Supurativa no SUS"
-  description: "Caracterização da HS (CID L73.2) nos microdados do DATASUS — SIA, SIH e SIM, 2020–2025."
+  description: "Caracterização da HS (CID L73.2) nos microdados do DATASUS — SIA, SIH e SIM, 2010–2025."
   site-url: ""
   navbar:
     background: "#5C3F6C"
@@ -21,8 +21,10 @@ website:
         text: Mortalidade (SIM)
       - href: consideracoes_finais.qmd
         text: Considerações finais
+      - href: notas_lancamento.qmd
+        text: Notas de lançamento
   page-footer:
-    center: "Microdados DATASUS (SIA-PA, SIH-RD, SIM-DO) · Censo 2022/IBGE · CID L73.2 · 2020–2025. Taxas de detecção/uso, não de prevalência."
+    center: "Microdados DATASUS (SIA-PA, SIH-RD, SIM-DO) · Projeção da População IBGE 2024 · CID L73.2 · 2010–2025. Taxas de detecção/uso, não de prevalência. Células < 5 suprimidas."
 
 format:
   html:
