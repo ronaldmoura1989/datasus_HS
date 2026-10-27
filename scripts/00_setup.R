@@ -59,7 +59,10 @@ set.seed(42)
 # -----------------------------------------------------------------------------
 # 1. Parâmetros globais
 # -----------------------------------------------------------------------------
-ANOS  <- 2020:2025
+# v2 (plano_expansao_2010.md): SIA/SIH 2010–2025 (arquivos de 2026 só fecham as
+# competências de 2025); SIM definitivo até 2024 — 2025 é PRELIMINAR e fica fora das taxas.
+ANOS     <- 2010:2025
+ANOS_SIM <- 2010:2024
 MESES <- 1:12                 # SIA/SIH são MENSAIS → unidade de iteração = UF×ano×mês
 UFS   <- c("AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG",
            "PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO")
@@ -75,11 +78,14 @@ MODO_CAPTURA <- "restrito"    # "restrito" | "ampliado"
 # Faixas etárias CANÔNICAS — mesma grade no numerador (paciente) e no denominador
 # (IBGE), senão a taxa padronizada é inválida (ver utils.R::harmonizar_faixa()).
 FAIXAS_BR    <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,Inf)
-POP_PADRAO   <- "censo2022"   # "censo2022" (comparações internas) | "oms" (internac.)
+POP_PADRAO   <- "proj2024_br2022"   # Brasil 2022 da Projeção IBGE Revisão 2024 | "oms" (internac.)
 N_SUPRESSAO  <- 5             # LGPD: suprimir células com N < 5 na divulgação
 
 # Anos a sinalizar como período anômalo (queda de produção eletiva — datasus_hs.md §9.11)
-ANOS_COVID   <- c(2020, 2021)
+ANOS_COVID   <- 2020:2022     # sensibilidade principal (guia §10); 2020–2021 como secundária
+
+# Filtrados HS 2010+ no R550-2 (scripts/r550/; nunca o datasus_filtrado/ do EIM)
+DIR_FILTRADO <- Sys.getenv("HS_DIR_FILTRADO", "~/Documentos/ronald/datasus_filtrado_hs")   # env só p/ teste
 
 # Paleta visual do projeto (CLAUDE.md §8) — espectro rosé → roxo
 PAL_HS <- c("#5C3F6C", "#816095", "#E9CDC9", "#A87FA8", "#D8B4C4", "#6E4E82", "#3E2A4D")

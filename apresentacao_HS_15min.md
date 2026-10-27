@@ -20,6 +20,12 @@ Supurativa (HS)**.
 
 ---
 
+> **Atualização v2 (out/2026).** O deck final (`apresentacao_HS_15min.pptx`) foi editado à mão
+> no PowerPoint e não é mais gerado por `scripts/gerar_apresentacao.R`. Suas figuras de dados
+> vêm de `scripts/figuras_apresentacao.R` (`apresentacao/figuras/*-v2.png`, série 2010–2025, só
+> agregados suprimidos) e foram trocadas dentro do `.pptx` preservando o layout. A numeração e
+> as fontes de figura citadas abaixo são do roteiro original.
+
 ## 1. Identidade visual (use as cores do relatório)
 
 Paleta oficial do projeto (espectro rosé → roxo). Use estes códigos hexadecimais:
@@ -90,7 +96,7 @@ Para cada slide: **título** (curto e humano), **mensagem** (a frase-chave a tra
 
 ### Slide 3 — De onde vêm estes números (≈1 min)
 - **Mensagem:** toda vez que alguém é atendido no SUS, fica um **registro** (sem nome,
-  protegido). Nós olhamos **milhões** desses registros, de **2020 a 2025**, em três
+  protegido). Nós olhamos **milhões** desses registros, de **2010 a 2025**, em três
   sistemas: atendimento ambulatorial, internações e mortalidade.
 - **Visual:** 3 caixinhas (Ambulatório · Internações · Óbitos) com ícones. Reforce
   "**dados anônimos e protegidos**".
@@ -139,8 +145,8 @@ Para cada slide: **título** (curto e humano), **mensagem** (a frase-chave a tra
 
 ### Slide 8 — Onde você mora muda seu acesso (≈1,5 min) — *o coração da mensagem*
 - **Mensagem:** o cuidado **não está distribuído de forma justa**. Estados com **mais
-  dermatologistas** detectam e tratam mais HS. A diferença de oferta chega a **6 vezes**
-  entre estados.
+  dermatologistas** detectam e tratam mais HS. A oferta de dermatologistas varia **quase
+  6 vezes** entre estados (2025).
 - **Visual:** o **mapa** de detecção + o **gráfico de dispersão** dermatologistas ×
   detecção. Fontes: `docs/index_files/figure-html/mapa-1.png` e
   `docs/sia_hs_files/figure-html/derm-scatter-1.png`. Traduza: "quanto mais
@@ -224,7 +230,7 @@ para o público (fontes maiores, títulos em linguagem simples, menos números):
 | "Taxa de detecção padronizada por idade e sexo" | "De forma justa, comparando estados parecidos, quantas pessoas estão sendo atendidas" |
 | "Não é prevalência, é detecção/uso" | "Esses números contam quem é **atendido**, não quantos **têm** a doença" |
 | "Pseudo-pacientes / record linkage" | "Tentamos estimar **quantas pessoas** estão por trás dos atendimentos" |
-| "Confundimento por acesso (r = 0,71)" | "Onde há mais médicos, encontra-se mais doença — porque alguém precisa diagnosticar" |
+| "Confundimento por acesso (r = 0,62)" | "Onde há mais médicos, encontra-se mais doença — porque alguém precisa diagnosticar" |
 | "Biossimilar / CEAF / alto custo" | "Uma versão equivalente e mais econômica do remédio, que o SUS oferece" |
 | "Subnotificação / codificação L02x" | "Muitos casos são confundidos com 'abscesso' e nunca recebem o diagnóstico certo" |
 | "Left-truncation / atraso diagnóstico" | "Muita gente demora **anos** até descobrir o que tem" |

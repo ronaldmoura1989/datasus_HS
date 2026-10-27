@@ -8,23 +8,17 @@
 # 1. Detecção / classificação de CID
 # -----------------------------------------------------------------------------
 
-#' Rotula a CAMADA de captura de um código CID (passada única — datasus_hs.md §2).
-#'
-#' Substitui o antigo detectar_cid() booleano: gera as 3 camadas de uma vez.
-#' ⚠️ Não existem subcódigos oficiais L7320/L7321 — L73.2 tem 4 caracteres.
-#' Normaliza para 4 chars e compara por igualdade (evita regex aberta).
+if (!exists("HS_LOOKUP")) source(here::here("scripts", "hs_lookup.R"))
+
+#' Rótulo LEGADO (v1) da camada de captura — wrapper de classificar_hs()
+#' (scripts/hs_lookup.R, a definição de caso versionada). Mantido só para os .qmd
+#' da v1; código novo usa classificar_hs() e as camadas nucleo/limitrofe/
+#' diferencial/envelope. "L73x" junta limítrofe e diferencial, como na v1.
 #'
 #' @return "L732" | "L73x" | "L02x" | NA_character_
-#'   Restrito  → camada == "L732"
-#'   Ampliado  → camada %in% c("L732","L73x","L02x"), reportadas em camadas separadas
 camada_cid <- function(campo) {
-  x <- stringr::str_sub(stringr::str_trim(toupper(as.character(campo))), 1, 4)
-  dplyr::case_when(
-    x == "L732"                    ~ "L732",   # caso-índice (restrito)
-    stringr::str_detect(x, "^L73") ~ "L73x",   # demais foliculares
-    stringr::str_detect(x, "^L02") ~ "L02x",   # ENVELOPE de subcodificação (teto, não caso)
-    TRUE                           ~ NA_character_
-  )
+  dplyr::recode(classificar_hs(campo, "hs"),
+                nucleo = "L732", limitrofe = "L73x", diferencial = "L73x", envelope = "L02x")
 }
 
 #' Conveniência: vetor lógico de "é HS no modo escolhido".
@@ -110,7 +104,8 @@ idade_em_anos <- function(idade, cod_idade = NULL) {
     cod == "4" ~ idade,                            # anos
     cod == "3" ~ idade / 12,                       # meses
     cod == "2" ~ idade / 365.25,                   # dias
-    TRUE       ~ idade                             # [VERIFICAR] demais códigos
+    cod %in% c("0", "1") ~ 0,                      # minutos/horas (guia §6.2)
+    TRUE       ~ NA_real_                          # código desconhecido: não inventar idade
   )
 }
 
@@ -252,6 +247,14 @@ qc_basico <- function(df, cols_cid = character()) {
 #' Supressão LGPD: oculta contagens de células pequenas na divulgação.
 suprimir_pequenas <- function(df, col_n, limiar = N_SUPRESSAO) {
   df |> dplyr::mutate("{{col_n}}" := ifelse({{ col_n }} < limiar, NA_integer_, {{ col_n }}))
+}
+
+#' Supressão LGPD da PRÓPRIA TAXA (e do IC) quando o nº de eventos < limiar (guia §10).
+suprimir_taxa <- function(df, col_ev = "eventos", limiar = N_SUPRESSAO,
+                          cols_taxa = c("taxa_bruta", "taxa_pad", "ic_inf", "ic_sup")) {
+  cols_taxa <- intersect(cols_taxa, names(df))
+  df |> dplyr::mutate(dplyr::across(dplyr::all_of(cols_taxa),
+                                    ~ dplyr::if_else(.data[[col_ev]] < limiar, NA_real_, .x)))
 }
 
 #' Coage as colunas comuns de `df` para a classe das colunas homônimas em `ref`,

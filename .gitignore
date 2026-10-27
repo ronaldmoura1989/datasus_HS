@@ -34,3 +34,10 @@ renv/sandbox/
 Thumbs.db
 .Rproj.user
 .vscode/
+
+# === Manuscript ===
+/manuscript/
+
+# === Manifestos com contagens pequenas (N < 5) — não publicar (LGPD) ===
+/manifest/v1_contagens_referencia.csv
+/manifest/completude_hs_por_ano.csv

@@ -1,0 +1,43 @@
+---
+title: "Notas de lançamento"
+subtitle: "O que mudou da v1 (2020–2025) para a v2 (2010–2025)"
+---
+
+```{r setup}
+#| include: false
+source("_common.R")
+```
+
+**v2 — `r format(as.Date(substr(E$meta$gerado, 1, 10)), "%d/%m/%Y")`.** Agregados gerados em
+`r E$meta$gerado`; definição de caso `scripts/hs_lookup.R` (hash
+`r substr(E$meta$lookup_hash, 1, 12)`…). A versão anterior está preservada na tag git
+`v1-2020-2025`.
+
+| Tema | v1 | v2 |
+|---|---|---|
+| Período | 2020–2025 | SIA/SIH `r TOT$anos[1]`–`r TOT$anos[2]` (arquivos de 2026 fecham as competências de 2025); SIM definitivo `r TOT$anos_sim[1]`–`r TOT$anos_sim[2]` + 2025 preliminar à parte |
+| Fonte dos brutos | RData pré-filtrados (SIA e SIH só pelo CID principal; SIM processado pelo microdatasus) | DBC originais, filtrados por escopo próprio (`scripts/r550/filtrar_um_hs.R`), validados contra a v1 numa UF × ano |
+| Ano do SIA | trimestre do arquivo | competência de atendimento (`PA_CMP`) |
+| Unidade do SIA | linhas (`nrow`), misturando consulta e dispensação | três canais: clínico (Σ quantidade), medicamento (APAC distintas/mês), envelope L02 (agregado) |
+| Camadas de CID | L732 / "L73x" / L02x | núcleo L732 / limítrofe L738–L739 / **diferencial L730–L731 separado** / envelope L02 |
+| SIH | só diagnóstico principal | principal (série primária) + qualquer campo (teto) |
+| SIM | `L732` buscado no texto do SIM processado | regex de causas múltiplas sobre o DBC bruto; causa básica × qualquer linha |
+| Denominador | Censo 2022 repetido em todos os anos | Projeção da População IBGE, revisão 2024, anual |
+| População-padrão | Censo 2022 | Brasil 2022 da mesma projeção |
+| Pandemia | 2020–2021 | 2020–2022 (sensibilidade principal) |
+| Tendência | descritiva | quasi-Poisson com offset + série interrompida no marco `r format(MARCO_DATA, "%m/%Y")` |
+| Pseudo-pacientes | raça/cor ausente virava paciente próprio; sem nº de APAC | raça/cor ausente = "NI"; ligação certa pelo nº da APAC; método determinístico |
+| Dermatologistas | Censo 2022 fixo como denominador | população do próprio ano; CNES-PF de junho, 2010–2025 |
+| Custos do SIH | nominais | deflacionados pelo IPCA (R$ de `r IPCA$ano_base[1]`) |
+| Números no texto | parte escrita à mão | todos por R inline (`qmd/_numeros.R`) |
+| Dados no site | microdados locais | só agregados com supressão de N < `r N_SUPRESSAO` |
+
+**Números que mudaram de forma relevante.** O intervalo de pseudo-pacientes em
+2020–2025 passa a `r pseudo_txt("2020-2025", "nucleo")` (a v1 inflava o limite superior
+por raça/cor ausente). A correlação entre oferta de dermatologistas e detecção passa a
+r = `r fmt_2(R_DERM)`, agora sobre o canal clínico e a população de cada ano. O SIH de
+2020–2025 reproduz exatamente a v1 no diagnóstico principal.
+
+**Correção de software.** O denominador agregado do filtro herdado do projeto EIM somava,
+em cada estrato, o total do arquivo para quantidades e valores (SIA) e para óbitos e
+diárias (SIH). Corrigido em `scripts/r550/filtrar_um_hs.R` antes da passada completa.

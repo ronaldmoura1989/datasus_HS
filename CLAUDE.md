@@ -22,16 +22,21 @@ clínico-epidemiológicas da Hidradenite Supurativa.
   DATASUS o CID é armazenado **sem ponto = `L732`**.
 - **Bases DATASUS:** **SIA-PA** (ambulatorial + APAC/alto custo), **SIH-RD**
   (internações — foco cirúrgico e comorbidades), **SIM-DO** (mortalidade — exploratório).
-- **Período:** **2020–2025** (`ANOS <- 2020:2025`). ⚠️ Os brutos de SIM-DO vão
-  apenas **até 2024**; verificar disponibilidade de **SIM-DO 2025** no DATASUS.
-- **Captura de casos:** **Restrito + sensibilidade**.
-  - **Primária (restrita):** apenas `L732` — alta especificidade.
-  - **Sensibilidade (ampliada, em camadas):** `L732` → `+L73x` → `+L02x`
-    (abscessos cutâneos), reportada separadamente.
-- **Dados brutos:** o usuário **já baixou** SIA/SIH/SIM e **irá transferi-los**
-  para `data/raw/`. Os scripts usam *skip-if-exists* — com os brutos presentes, a
-  etapa de download é pulada e o pipeline segue para filtro/consolidação.
-  Reconciliar o padrão de nomes dos arquivos transferidos (ver §7).
+- **Período (v2, out/2026):** SIA/SIH **2010–2025** (`ANOS <- 2010:2025`; os arquivos
+  de 2026 só fecham as competências de 2025); SIM definitivo **2010–2024**
+  (`ANOS_SIM`), 2025 preliminar à parte e fora das taxas. Plano e status:
+  **`plano_expansao_2010.md`**. A v1 (2020–2025, brutos pré-filtrados) está na tag
+  git `v1-2020-2025`.
+- **Captura de casos:** **Restrito + sensibilidade**, definida pela lookup
+  versionada **`scripts/hs_lookup.R`** (hash em `manifest/hs_lookup_versao.csv`):
+  - **núcleo** `L732` (número primário); **limítrofe** `L738`/`L739`;
+    **diferencial** `L730`/`L731` (outras doenças — nunca HS); **envelope** `L02`
+    (teto de subcodificação, nunca caso); procedimentos de **adalimumabe** (SIGTAP).
+- **Dados brutos (v2):** DBC originais 2010+ no **R550-2**
+  (`~/Documentos/ronald/datasus_raw/`, compartilhados — nunca tocar), filtrados por
+  `scripts/r550/` para `~/Documentos/ronald/datasus_filtrado_hs/`. Guia de
+  processamento: **`ref/guia_processamento_datasus.md`** (projeto EIM). Os brutos
+  pré-filtrados da v1 em `data/raw/` são legado (§7.1), congelados até a v2 ser publicada.
 
 ---
 
@@ -105,7 +110,8 @@ ensure_pkg(pkgs_cran, github = pkgs_github)
 ```r
 set.seed(42)
 
-ANOS  <- 2020:2025
+ANOS     <- 2010:2025         # SIA/SIH (arquivos de 2026 só fecham competências de 2025)
+ANOS_SIM <- 2010:2024         # SIM definitivo; 2025 preliminar fica fora das taxas
 MESES <- 1:12                 # SIA/SIH são MENSAIS → unidade de iteração = UF×ano×mês
 UFS   <- c("AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG",
            "PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO")
@@ -120,8 +126,10 @@ MODO_CAPTURA <- "restrito"    # "restrito" | "ampliado"
 # Faixas etárias CANÔNICAS — mesma grade no numerador (paciente) e no denominador
 # (IBGE), senão a taxa padronizada é inválida (ver utils.R::harmonizar_faixa()).
 FAIXAS_BR <- c(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,Inf)
-POP_PADRAO   <- "censo2022"   # "censo2022" (comparações internas) | "oms" (internac.)
-N_SUPRESSAO  <- 5             # LGPD: suprimir células com N < 5 na divulgação
+POP_PADRAO   <- "proj2024_br2022"   # Brasil 2022 da Projeção IBGE Revisão 2024 | "oms"
+N_SUPRESSAO  <- 5             # LGPD: suprimir células (e taxas) com N < 5 na divulgação
+ANOS_COVID   <- 2020:2022     # sensibilidade principal (2020–2021 como secundária)
+DIR_FILTRADO <- Sys.getenv("HS_DIR_FILTRADO", "~/Documentos/ronald/datasus_filtrado_hs")  # R550-2
 
 # Paleta visual do projeto (ver §8)
 PAL_HS <- c("#5C3F6C", "#816095", "#E9CDC9", "#A87FA8", "#D8B4C4", "#6E4E82", "#3E2A4D")
@@ -137,35 +145,41 @@ Diretórios (criados em `00_setup.R` com `dir.create(recursive = TRUE)`): ver §
 datasus_HS/
 ├── CLAUDE.md                     # este guia
 ├── datasus_hs.md                 # plano consolidado / metodologia
-├── _quarto.yml                   # website Quarto → output-dir: docs
+├── plano_expansao_2010.md        # plano e STATUS da v2 (2010–2025)
+├── ref/                          # guia_processamento_datasus.md (EIM), normativo_hs.md, sigtap_hs.csv
 ├── .gitignore
 ├── renv.lock
 ├── scripts/
 │   ├── 00_setup.R                # ensure_pkg(), params, seed, paleta, dirs
-│   ├── utils.R                   # camada_cid(), normalizar_cid_sim(), cid_valido(), idade_em_anos(), decode_idade_sim(), harmonizar_faixa(), uf_from_mun(), corrigir_encoding(), coagir_tipos(), casar_tipos(), mapear_uf_regiao(), log_run(), validar_grade_completa(), qc_basico(), suprimir_pequenas()
-│   ├── 01_validar_brutos.R       # valida grade + conteúdo dos brutos (SIA/SIH/SIM)
-│   ├── get_hs_data_from_SIA.R    # consolida SIA-PA → parquet/sia_hs (ano+uf)
-│   ├── feature_eng_pacientes_SIA.R # pseudo-ID de paciente (record linkage) → sia_hs_pacientes
-│   ├── get_hs_data_from_SIH.R    # consolida SIH-RD (cirúrgico/comorbidades) → parquet/sih_hs
-│   ├── get_hs_data_from_SIM.R    # filtra/consolida SIM-DO (+2025 preliminar opendatasus)
-│   ├── get_denominadores_ibge.R  # população IBGE Censo 2022 via sidrar → denominators/pop_ibge
-│   ├── get_dermatologistas_cnes.R # nº de dermatologistas por UF×ano (CNES-PF, CBO) → oferta/acesso
-│   └── calcular_taxas.R          # taxas brutas/padronizadas (direta idade×sexo, IC gama) — lib p/ .qmd
-├── qmd/
-│   ├── index.qmd                 # portal KPIs
-│   ├── sia_hs.qmd                # ambulatorial
-│   ├── sih_hs.qmd                # internações
-│   └── sim_hs.qmd                # mortalidade
-├── data/
-│   ├── raw/{sia_files_hs,SIH_files,SIM_DO}/      # brutos (transferidos pelo usuário)
-│   ├── filtered/{sia_hs,sih_hs,sim_hs}/          # *_hs.RData filtrados por CID
-│   ├── denominators/{sia,sih,sim}/               # totais agregados na ingestão (denominador de uso) + pop_ibge.parquet
-│   ├── parquet/{sia_hs,sih_hs,sim_hs}/           # Parquet particionado por ano + uf
-│   └── consolidated/{sia,sih,sim}_hs_nacional.RData
-├── logs/run_log_{sia,sih,sim}.csv
-├── manifest/                     # params_run_*.yaml, checksums
+│   ├── hs_lookup.R               # DEFINIÇÃO DE CASO versionada (CID + adalimumabe + comorbidades)
+│   ├── utils.R                   # camada_cid() (wrapper legado), normalizar_cid_sim(), cid_valido(), idade_em_anos(), decode_idade_sim(), harmonizar_faixa(), uf_from_mun(), coagir_tipos(), casar_tipos(), mapear_uf_regiao(), suprimir_pequenas(), suprimir_taxa()…
+│   ├── r550/                     # roda NO R550-2: config_filtro_hs.R, filtrar_um_hs.R, orquestrar_filtro_hs.sh,
+│   │                             #   validar_piloto_hs.R, baixar_cnes_pf.py, rodar_pipeline_hs.sh
+│   ├── get_hs_data_from_{SIA,SIH,SIM}.R  # consolidação v2 a partir dos filtrados (R550-2)
+│   ├── feature_eng_pacientes_SIA.R # pseudo-pacientes (motor pseudo_id_motor.R, do EIM) + pacientes em tratamento
+│   ├── completude_campos_hs.R    # completude por base × ano (HS × total)
+│   ├── get_denominadores_ibge.R  # Projeção IBGE Revisão 2024, anual → denominators/pop_ibge
+│   ├── get_dermatologistas_cnes.R # dermatologistas UF×ano (CNES-PF bruto, junho) → oferta/acesso
+│   ├── get_ipca.R                # deflator anual (SIDRA 1737)
+│   ├── calcular_taxas.R          # taxas padronizadas, tendência quasi-Poisson, série interrompida (lib)
+│   ├── taxas_tendencias_hs.R     # E12: taxas, tendências e ITS
+│   ├── exportar_agregados_hs.R   # E13: agregados SUPRIMIDOS → data/export (único insumo do site)
+│   └── v1_congelar_referencia.R  # E0: contagens de referência da v1
+├── qmd/                          # site (lê SÓ data/export + denominadores públicos)
+│   ├── _common.R, _numeros.R     # setup; números do texto com nomes estáveis (R inline)
+│   ├── index.qmd, sia_hs.qmd, sih_hs.qmd, sim_hs.qmd
+│   └── consideracoes_finais.qmd, notas_lancamento.qmd
+├── data/                         # NÃO versionado
+│   ├── raw/                      # LEGADO v1 (brutos pré-filtrados, congelados)
+│   ├── export/                   # hs_v2_agregados.rds + csv/ (vem do R550-2 por rsync)
+│   └── denominators/             # pop_ibge, dermatologistas_uf, ipca_anual, sigtab (cache)
+├── manifest/                     # v1_*, hs_lookup_versao.csv, completude, pseudo-pacientes
 └── docs/                         # website renderizado (versionado) + .nojekyll
 ```
+
+No R550-2, `~/Documentos/ronald/datasus_HS/` é a cópia de trabalho (scripts por
+`rsync scripts/`, `.here` na raiz) onde ficam `data/{parquet,consolidated}` com
+**microdados** — eles não saem do servidor; só `data/export/` é copiado.
 
 `.gitignore` deve excluir: `data/`, `logs/`, `*.RData`, `*.rds`, `*_cache/`,
 `*_files/` (cache Quarto), `.Rhistory`, `.RData`, `.Rproj.user/`,
@@ -217,37 +231,40 @@ datasus_HS/
 - **Supressão LGPD:** suprimir células com `N < N_SUPRESSAO` (§3) na divulgação.
 - **Não inventar** CID, procedimento SIGTAP, CBO, portaria ou prevalência.
   Marcar pendências com `[VERIFICAR]` / `[CONFIRMAR via fetch_sigtab()]`.
+- **Regras da v2 (guia `ref/guia_processamento_datasus.md`):**
+  - os filtrados 2010+ estão **todos em texto** → `as.numeric()` em tudo que for somado;
+    **não reconverter latin1** (já é UTF-8; `corrigir_encoding()` é só legado v1);
+  - SIA: **ano = ano de `PA_CMP`**; ler em **canais** (clínico = BPA-I + APAC sem
+    medicamento, Σ `PA_QTDAPR`; medicamento = APAC de adalimumabe, APAC distintas/mês;
+    envelope L02 só agregado); BPA-C não tem CID; o canal clínico só tem CID na
+    consulta especializada a partir de **2014**;
+  - SIH: AIH distinta, ano = `ANO_CMPT`; sabor **principal** = série primária,
+    **qualquer campo** = teto (cresce com o preenchimento);
+  - SIM: causa básica × qualquer linha (regex `(^|\*)L732`), só definitivos nas taxas;
+  - taxas: `contar_estrato()` avisa descarte; denominador restrito aos anos do
+    numerador (sem "anos-fantasma"); `suprimir_taxa()` em toda saída;
+  - **números no texto só por R inline** (`qmd/_numeros.R`), nunca digitados;
+  - **site lê só `data/export/`** (agregados suprimidos); evitar tabelas com subtotais
+    que permitam recuperar célula suprimida por diferença.
 
-### `camada_cid()` — rotula a camada de captura por registro (em `utils.R`)
+### Definição de caso: `scripts/hs_lookup.R`
 
-Substitui o antigo `detectar_cid()` booleano: gera as **3 camadas numa única passada**
-(em vez de reprocessar o bruto 3×) e alinha-se ao desenho restrito→ampliado de
-`datasus_hs.md` §2. **Atenção:** não existem subcódigos oficiais `L7320`/`L7321` — a
-categoria L73.2 tem 4 caracteres; normalizar para 4 chars e comparar por igualdade
-evita regex aberta.
+A definição de caso **é** a tabela `HS_LOOKUP` (prefixo → domínio/camada/rótulo;
+mais específico primeiro), com hash registrado por `registrar_versao_lookup()`.
+`classificar_hs(x, dominio = "hs" | "proc" | "comorb")` devolve a camada
+(`nucleo`, `limitrofe`, `diferencial`, `envelope`, `medicamento`, `comorbidade`).
+`camada_cid()` em `utils.R` é só um wrapper com os rótulos da v1 (`L732`/`L73x`/`L02x`).
+Não existem subcódigos oficiais `L7320`/`L7321` — L73.2 tem 4 caracteres.
 
 ```r
-camada_cid <- function(campo) {
-  x <- stringr::str_sub(stringr::str_trim(toupper(as.character(campo))), 1, 4)
-  dplyr::case_when(
-    x == "L732"                    ~ "L732",   # caso-índice (restrito)
-    stringr::str_detect(x, "^L73") ~ "L73x",   # demais foliculares
-    stringr::str_detect(x, "^L02") ~ "L02x",   # ENVELOPE de subcodificação (teto, não caso)
-    TRUE                           ~ NA_character_
-  )
-}
-# Restrito  → camada == "L732"
-# Ampliado  → camada %in% c("L732","L73x","L02x"), reportadas em camadas separadas
-
 cid_valido <- function(campo)   # marca CID malformado ANTES de filtrar (indicador de qualidade, §6.8)
   stringr::str_detect(stringr::str_trim(toupper(as.character(campo))), "^[A-Z][0-9]{2}")
 ```
 
 **Campos de CID por base** (após `clean_names()`):
-- **SIA-PA:** `pa_cidpri` (principal), `pa_cidsec`, `pa_cidcas`. ⚠️ **Não há `pa_cidpec`**
-  nesta extração (SIA-PA de produção); rastrear adalimumabe/APAC exige a base **SIA-AM/AP
-  (APAC)** ou código de procedimento, não disponível aqui — ver §7. Os brutos atuais já
-  vêm **filtrados por `pa_cidpri == L732`** (só CID principal).
+- **SIA-PA:** `pa_cidpri` (principal; único usado na série longa), `pa_cidsec`,
+  `pa_cidcas`. Não há `pa_cidpec`, mas o **adalimumabe é rastreável** pelo procedimento
+  da APAC (`pa_proc_id` 06.04.38.xxx; códigos e vigência em `ref/sigtap_hs.csv`).
 - **SIH-RD:** `diag_princ` + `diag_secun` + `diagsec1`…`diagsec9` (11 campos no layout
   atual). **Detecção dinâmica** das colunas presentes e `any_of` (não `all_of`):
   ```r
@@ -284,25 +301,22 @@ Fase 0 — Ambiente
   renv::restore()                              # 1ª vez: instala do lock
   source("scripts/00_setup.R")                 # params, dirs, paleta, seed
 
-Fase 1 — Dados brutos
-  # Os brutos serão transferidos pelo usuário para data/raw/.
-  # Reconciliar nomes (§7). Verificar disponibilidade de SIM-DO 2025.
-  # Grade esperada: SIA/SIH = 27 UF × 6 anos × 12 meses (= 1944/base); SIM = 27 UF × anos.
-  # Se faltarem competências: rodar a Etapa 2 (download) do script correspondente.
-  # validar_grade_completa(base) deve retornar 0 faltantes antes de avançar (stop() se >0).
+Fase 1 — Filtragem dos DBC (NO R550-2, em tmux: ~/miniconda3/envs/datasus/bin/tmux)
+  rsync -a scripts/ R550-2:Documentos/ronald/datasus_HS/scripts/   # (do local)
+  bash scripts/r550/orquestrar_filtro_hs.sh --uf PE --ano-min 2021 --ano-max 2021   # piloto
+  Rscript scripts/r550/validar_piloto_hs.R     # deve terminar em "PILOTO APROVADO"
+  bash scripts/r550/orquestrar_filtro_hs.sh --base todas --jobs 24  # ~1h40; retomável (.ok)
+  python3 scripts/r550/baixar_cnes_pf.py       # CNES-PF de junho, 2010–2025
 
-Fase 1.5 — Validação dos brutos
-  Rscript scripts/01_validar_brutos.R          # grade + conteúdo (0 faltantes p/ avançar)
+Fase 2 — Consolidação → taxas (NO R550-2)
+  bash scripts/r550/rodar_pipeline_hs.sh       # SIA, SIH, SIM, CNES, pseudo-ID, completude, taxas/ITS
+  Rscript scripts/exportar_agregados_hs.R      # → data/export (agregados suprimidos)
 
-Fase 2 — Filtro + consolidação
-  Rscript scripts/get_hs_data_from_SIA.R       # → parquet/sia_hs + consolidated
-  Rscript scripts/feature_eng_pacientes_SIA.R  # → sia_hs_pacientes (pseudo-ID; datasus_hs.md §5.1)
-  Rscript scripts/get_hs_data_from_SIH.R       # → parquet/sih_hs + consolidated
-  Rscript scripts/get_hs_data_from_SIM.R       # → consolidated/sim_hs_nacional (+2025 preliminar)
-  Rscript scripts/get_denominadores_ibge.R     # → denominators/pop_ibge (Censo 2022 via sidrar)
-
-Fase 3 — Relatórios
-  quarto render                                # qmd/ → docs/ (self-contained)
+Fase 3 — Relatórios (local)
+  rsync -a R550-2:Documentos/ronald/datasus_HS/data/export/ data/export/
+  Rscript scripts/get_denominadores_ibge.R; Rscript scripts/get_ipca.R   # públicos, com cache
+  cd qmd && quarto render <pagina>.qmd         # UMA página por comando (guia §12)
+  # varrer o HTML: NA solto, código R vazado, anos da janela antiga fora das notas
 
 Fase 4 — Publicação
   # criar .nojekyll em docs/; repositório GitHub; GitHub Pages servindo /docs
@@ -326,6 +340,11 @@ Fase 4 — Publicação
 9. **Códigos SIGTAP/CBO** — validar via `fetch_sigtab()` na competência correta antes de citar (não fixar códigos sem confirmação).
 10. **Efeito COVID-19 (2020–2021)** — queda de produção eletiva/dermatológica afeta toda série temporal; ressalva obrigatória nos relatórios (`datasus_hs.md` §6, §9.11).
 11. **Descontinuidade do denominador em 2022 (Censo)** — harmonizar a série populacional (retrointerpolar a partir do Censo 2022) e fixar `POP_PADRAO` (`datasus_hs.md` §5).
+
+> **§7 e §7.1 descrevem a v1 (LEGADO).** Na v2 os brutos são os DBC do R550-2 (§1, §6).
+> Dois pontos abaixo foram superados: o eixo do **adalimumabe é viável** (pelo
+> procedimento da APAC) e o sabor **"qualquer campo" do SIH é recuperável** na v2.
+> As contagens da v1 servem de referência de validação (`manifest/v1_contagens_referencia.csv`).
 
 ### 7.1 Reconciliação CONFIRMADA dos brutos (validado em 2026-06 — `01_validar_brutos.R`)
 

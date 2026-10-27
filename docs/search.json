@@ -4,14 +4,14 @@
     "href": "sia_hs.html",
     "title": "Ambulatorial (SIA-PA)",
     "section": "",
-    "text": "158.850\n\n\nregistros ambulatoriais\n\n\n\n\n25.325–30.675\n\n\npseudo-pacientes\n\n\n\n\n59,1%\n\n\nregistros do sexo feminino\n\n\n\n\n20-24\n\n\nfaixa etária modal\nO SIA-PA capta a produção ambulatorial com pa_cidpri == L732. São 158.850 registros em 2020–2025. A unidade é o registro de procedimento, não a pessoa — ver pseudo-pacientes."
+    "text": "27.896\n\n\natendimentos clínicos com L73.2 (Σ quantidade)\n\n\n\n\n4.052\n\n\npacientes/mês em adalimumabe (2025)\n\n\n\n\n11.720–15.765\n\n\npseudo-pacientes 2020–2025 (intervalo)\n\n\n\n\n59,4%\n\n\ndos registros no sexo feminino\nO SIA-PA registra a produção ambulatorial. Aqui entram os registros com PA_CIDPRI = L73.2 no CID principal (o secundário praticamente some depois de 2014 e não serve para série longa). O ano é o da competência de atendimento (PA_CMP), não o do arquivo. São 168.141 registros em 2010–2025, dos quais 85,9% são dispensação de adalimumabe. Por isso o SIA é lido em canais separados:\nO BPA consolidado não tem CID e, portanto, não entra em nenhum canal."
   },
   {
     "objectID": "sia_hs.html#perfil-demográfico",
     "href": "sia_hs.html#perfil-demográfico",
     "title": "Ambulatorial (SIA-PA)",
     "section": "Perfil demográfico",
-    "text": "Perfil demográfico\n\n\n\n\n\n\n\n\n\n\n\nraca_corregistros%Branca71.82945,2Parda58.18436,6Não informada14.0978,9Preta10.7796,8Amarela3.9402,5Indígena210,0Raça/cor 99 (sem informação) reclassificada como 'Não informada'."
+    "text": "Perfil demográfico\n\n\n\n\n\n\n\n\n\n\n\nCanalPeríodoRaça/corRegistros%adalimumabe2010–2019Parda&lt;5—adalimumabe2010–2019Não informada2775,0adalimumabe2010–2019Branca925,0adalimumabe2020–2025Não informada13.6059,4adalimumabe2020–2025Preta9.4606,6adalimumabe2020–2025Branca66.56246,1adalimumabe2020–2025Parda51.91536,0adalimumabe2020–2025Amarela2.8051,9adalimumabe2020–2025Indígena100,0clínico2010–2019Branca1.45944,7clínico2010–2019Amarela1253,8clínico2010–2019Parda95129,2clínico2010–2019Preta37811,6clínico2010–2019Não informada34810,7clínico2020–2025Preta1.7928,7clínico2020–2025Amarela1.3076,4clínico2020–2025Parda8.76042,8clínico2020–2025Branca8.12239,6clínico2020–2025Não informada4922,4clínico2020–2025Indígena120,1Preenchimento de raça/cor nos registros HS: 56,6% a 100,0% conforme o ano (manifest/completude_hs_por_ano.csv); no SIA-PA total, de 36,4% para 93,8%. Diferença entre períodos mede também preenchimento. Células com 1 a 4 eventos suprimidas (LGPD), exibidas como \"&lt;5\" ou em branco."
   },
   {
     "objectID": "sia_hs.html#taxas-de-detecção-padronizadas",
@@ -32,7 +32,7 @@
     "href": "sia_hs.html#pseudo-pacientes",
     "title": "Ambulatorial (SIA-PA)",
     "section": "Pseudo-pacientes",
-    "text": "Pseudo-pacientes\nSem identificador de paciente no SIA público, estimamos pessoas por record linkage de quase-identificadores (sexo, ano de nascimento, município, raça/cor). O resultado é um intervalo, não um número exato (método: datasus_hs.md §5.1).\n\n\nNívelRegraPseudo-pacientesRegistros/pacienteregistro_eventosem de-dup158.8501,0estritasexo+raça+município+ano_nasc exato30.6755,2intermediariaestrita + janela ano_nasc ±1 (CENTRAL)27.5685,8frouxasexo+município+ano_nasc±1 (sem raça)25.3256,3Intervalo [frouxa; estrita]. Colisão domina em municípios grandes; fragmentação na cauda crônica. Não é contagem oficial de pacientes.\n\n\n\nLeitura. De 158.850 registros para ~25.325–30.675 pseudo-pacientes (≈ 5–6 registros por pessoa). Em capitais a desambiguação é fundamentalmente limitada pela colisão de atributos — as taxas seguem sendo de detecção/uso."
+    "text": "Pseudo-pacientes\nSem identificador de paciente no SIA público, estimamos pessoas por ligação determinística de quase-identificadores (sexo, ano de nascimento, município, raça/cor), com ligação certa pelo número da APAC; raça/cor ausente é uma categoria (“NI”), não um paciente à parte. O resultado é um intervalo [frouxa; estrita]. Janelas longas fragmentam mais (mudança de município e de raça/cor declarada): a janela 2010–2025 é só sensibilidade.\n\n\nJanelaRecorteRegistrosIntervalo (frouxa–estrita)CentralRegistros/pessoa2020-2025todos os canais164.84211.720–15.76514.30311,52020-2025clínico20.4856.437–8.6037.8202,62020-2025adalimumabe144.3576.957–9.0688.08817,92010-2025todos os canais168.14112.389–16.75015.17511,12010-2025clínico23.7407.218–9.7548.8332,72010-2025adalimumabe144.3956.957–9.0718.08817,9Motor: scripts/pseudo_id_motor.R. Agrupador, não identificador (LGPD). Não é contagem oficial de pacientes."
   },
   {
     "objectID": "sia_hs.html#quem-maneja-e-com-quais-procedimentos",
@@ -46,28 +46,28 @@
     "href": "sia_hs.html#limitações",
     "title": "Ambulatorial (SIA-PA)",
     "section": "Limitações",
-    "text": "Limitações\n\nCaptura restrita (L732) → subestima HS leve (codificada como abscesso L02x); viés de gravidade (o capturado tende a HS moderada/grave); pa_munpcn pode mudar (fragmentação); 2020–2021 sob pandemia; taxas de detecção/uso, não prevalência. Detalhes: datasus_hs.md §9."
+    "text": "Limitações\n\nCaptura restrita (L732) → subestima HS leve (codificada como abscesso L02x); viés de gravidade; o canal clínico depende de regras de registro (BPA-C sem CID até 2013; compatibilidades do SIGTAP que mudam no tempo); PA_MUNPCN pode mudar (fragmentação do pseudo-ID); 2020–2022 sob pandemia; taxas de detecção/uso, não prevalência. Detalhes: datasus_hs.md §9 e plano_expansao_2010.md."
   },
   {
     "objectID": "consideracoes_finais.html",
     "href": "consideracoes_finais.html",
     "title": "Considerações finais",
     "section": "",
-    "text": "A análise dos microdados do DATASUS (SIA-PA, SIH-RD e SIM-DO, 2020–2025) para a Hidradenite Supurativa (CID-10 L73.2) compõe um retrato coerente, ainda que necessariamente parcial, de uma doença crônica, debilitante e historicamente subdimensionada no SUS. O eixo ambulatorial é, disparado, o centro de gravidade dos dados: cerca de 88% dos registros do SIA-HS correspondem à dispensação de adalimumabe, deslocando o significado das nossas medidas. O que tabulamos não é prevalência, mas detecção e uso de serviços — em particular, uso do componente de alto custo. Os denominadores são populações em risco aproximadas, não casos confirmados, e o número de pessoas por trás dos registros (estimativa probabilística de ~25 a 31 mil pseudo-pacientes, na ausência de identificador longitudinal no dado público) deve ser lido como ordem de grandeza, não como contagem.\nDois achados novos qualificam essa síntese. Primeiro, a confirmação de que a geografia da detecção mede capacidade diagnóstica instalada, e não distribuição real da doença. Segundo, a leitura, agora possível nos microdados, de uma política de substituição por biossimilares em curso no componente de alto custo — um sinal de que o dado administrativo, apesar de suas limitações clínicas, captura com nitidez decisões de gestão farmacêutica.\nOs demais eixos reforçam o caráter ambulatorial e de alto custo do problema: o SIH-RD registra apenas 631 internações no período, com comorbidades provavelmente subnotificadas (preenchimento de diagnósticos secundários em torno de 16%), e o SIM-DO confirma que a HS é quase invisível na mortalidade (96 óbitos com menção, apenas 1 como causa básica). A HS pesa no SUS pelo custo continuado do tratamento e pela carga de adoecimento crônico, não pela letalidade."
+    "text": "A análise dos microdados do DATASUS de 2010 a 2025 (SIA-PA, SIH-RD; SIM-DO até 2024) para a Hidradenite Supurativa (CID-10 L73.2) mostra uma doença ambulatorial, crônica e de alto custo, cuja presença no dado administrativo depende fortemente de regras de registro e de acesso ao especialista. O que medimos não é prevalência: é detecção e uso de serviços.\nO SIA concentra a informação, mas mistura dois fenômenos que a série longa permite separar. Do total de registros com L73.2 no CID principal, 85,9% são dispensações de adalimumabe — um canal que só existe para a HS desde 11/2019 e que mede pessoas em tratamento (4.052 por mês em 2025). O canal clínico (consultas, exames e pequenas cirurgias com CID) mede detecção e cresce 38,6% (IC 95% 33,1–44,7%) ao ano (2014–2025). Parte desse crescimento é expansão do registro individualizado, mas, mesmo normalizada pela produção individualizada da dermatologia, a detecção de L73.2 sobe de 0,17 para 1,13 por mil procedimentos entre 2014 e 2025.\nAs pessoas por trás dos registros, estimadas por ligação determinística, somam entre 11.720–15.765 em 2020–2025 — ordem de grandeza, não contagem. O SIH registra 974 internações com HS como motivo principal (2.147 com HS em qualquer campo), e o SIM confirma a HS como quase invisível na mortalidade: 103 óbitos com menção em 2010–2024, quase sempre como causa contribuinte."
   },
   {
     "objectID": "consideracoes_finais.html#síntese",
     "href": "consideracoes_finais.html#síntese",
     "title": "Considerações finais",
     "section": "",
-    "text": "A análise dos microdados do DATASUS (SIA-PA, SIH-RD e SIM-DO, 2020–2025) para a Hidradenite Supurativa (CID-10 L73.2) compõe um retrato coerente, ainda que necessariamente parcial, de uma doença crônica, debilitante e historicamente subdimensionada no SUS. O eixo ambulatorial é, disparado, o centro de gravidade dos dados: cerca de 88% dos registros do SIA-HS correspondem à dispensação de adalimumabe, deslocando o significado das nossas medidas. O que tabulamos não é prevalência, mas detecção e uso de serviços — em particular, uso do componente de alto custo. Os denominadores são populações em risco aproximadas, não casos confirmados, e o número de pessoas por trás dos registros (estimativa probabilística de ~25 a 31 mil pseudo-pacientes, na ausência de identificador longitudinal no dado público) deve ser lido como ordem de grandeza, não como contagem.\nDois achados novos qualificam essa síntese. Primeiro, a confirmação de que a geografia da detecção mede capacidade diagnóstica instalada, e não distribuição real da doença. Segundo, a leitura, agora possível nos microdados, de uma política de substituição por biossimilares em curso no componente de alto custo — um sinal de que o dado administrativo, apesar de suas limitações clínicas, captura com nitidez decisões de gestão farmacêutica.\nOs demais eixos reforçam o caráter ambulatorial e de alto custo do problema: o SIH-RD registra apenas 631 internações no período, com comorbidades provavelmente subnotificadas (preenchimento de diagnósticos secundários em torno de 16%), e o SIM-DO confirma que a HS é quase invisível na mortalidade (96 óbitos com menção, apenas 1 como causa básica). A HS pesa no SUS pelo custo continuado do tratamento e pela carga de adoecimento crônico, não pela letalidade."
+    "text": "A análise dos microdados do DATASUS de 2010 a 2025 (SIA-PA, SIH-RD; SIM-DO até 2024) para a Hidradenite Supurativa (CID-10 L73.2) mostra uma doença ambulatorial, crônica e de alto custo, cuja presença no dado administrativo depende fortemente de regras de registro e de acesso ao especialista. O que medimos não é prevalência: é detecção e uso de serviços.\nO SIA concentra a informação, mas mistura dois fenômenos que a série longa permite separar. Do total de registros com L73.2 no CID principal, 85,9% são dispensações de adalimumabe — um canal que só existe para a HS desde 11/2019 e que mede pessoas em tratamento (4.052 por mês em 2025). O canal clínico (consultas, exames e pequenas cirurgias com CID) mede detecção e cresce 38,6% (IC 95% 33,1–44,7%) ao ano (2014–2025). Parte desse crescimento é expansão do registro individualizado, mas, mesmo normalizada pela produção individualizada da dermatologia, a detecção de L73.2 sobe de 0,17 para 1,13 por mil procedimentos entre 2014 e 2025.\nAs pessoas por trás dos registros, estimadas por ligação determinística, somam entre 11.720–15.765 em 2020–2025 — ordem de grandeza, não contagem. O SIH registra 974 internações com HS como motivo principal (2.147 com HS em qualquer campo), e o SIM confirma a HS como quase invisível na mortalidade: 103 óbitos com menção em 2010–2024, quase sempre como causa contribuinte."
   },
   {
     "objectID": "consideracoes_finais.html#impacto-no-sus-e-inequidade-de-acesso",
     "href": "consideracoes_finais.html#impacto-no-sus-e-inequidade-de-acesso",
     "title": "Considerações finais",
     "section": "Impacto no SUS e inequidade de acesso",
-    "text": "Impacto no SUS e inequidade de acesso\nA distribuição territorial da detecção é o achado de saúde pública mais consequente — e o mais traiçoeiro de interpretar. O cruzamento da densidade de dermatologistas por UF (fonte externa: CNES-PF, CBO 223117/225135) com a taxa de detecção padronizada de HS produz uma correlação de Pearson r = 0,71, forte e positiva. Em outras palavras: onde há mais dermatologistas, detecta-se mais HS — o que é esperado se a “taxa” mede oferta, e não doença.\nA magnitude da desigualdade de oferta é expressiva. A densidade de dermatologistas varia cerca de 6 vezes entre os extremos: aproximadamente 11 por 100 mil no DF e no RJ, e 9,6 em SP, contra ~1,8 no MA e ~2,0 no AC, RR e AP. O heatmap UF × ano torna esse padrão visível e crônico: a produção concentra-se de forma persistente em São Paulo, no Paraná e nas capitais, com vazios assistenciais que se repetem ano após ano no interior do Norte e Nordeste, sem sinal de convergência ao longo da série.\n\nA leitura epidemiológica correta inverte a aparência do dado. As menores “taxas” do Norte e Nordeste não indicam menos doença, mas menos porta de entrada diagnóstica. O r = 0,71 transforma uma suspeita metodológica em evidência quantitativa de subdetecção por barreira de acesso: a HS existe nessas regiões, mas não é diagnosticada, codificada e tratada na mesma proporção. A inequidade, portanto, é dupla — de acesso ao diagnóstico especializado e, em consequência, ao tratamento de alto custo.\n\nEssa dependência da oferta especializada para o diagnóstico atravessa todos os achados: o subdiagnóstico provável (HS frequentemente codificada como abscesso, L02x), o viés de gravidade da captura restrita a L73.2, e o atraso diagnóstico — clinicamente reconhecido, mas não mensurável neste desenho por ausência de seguimento individual."
+    "text": "Impacto no SUS e inequidade de acesso\nA distribuição territorial da detecção acompanha a oferta de dermatologistas: Pearson r = 0,62 (Spearman ρ = 0,53) entre a densidade de dermatologistas e a detecção clínica padronizada por UF (2014–2025). A densidade nacional sobe de 2,83 para 6,59 por 100 mil entre 2010 e 2025, mas em 2025 ainda varia 5,9 vezes entre a maior (DF) e a menor UF (RR).\n\nAs menores “taxas” não indicam necessariamente menos doença, e sim menos porta de entrada diagnóstica. A inequidade é dupla: no acesso ao diagnóstico especializado e, em consequência, ao tratamento de alto custo, que exige o CID L73.2 registrado."
   },
   {
     "objectID": "consideracoes_finais.html#a-transição-para-biossimilares-o-que-o-alto-custo-revela",
@@ -81,21 +81,21 @@
     "href": "consideracoes_finais.html#perspectivas-e-oportunidades-de-acesso",
     "title": "Considerações finais",
     "section": "Perspectivas e oportunidades de acesso",
-    "text": "Perspectivas e oportunidades de acesso\n\nConsolidar e monitorar a substituição por biossimilar como ganho de eficiência. A migração para biossimilares amplia a sustentabilidade do tratamento de alto custo e pode liberar recursos para ampliar acesso. Recomenda-se transformá-la em indicador de monitoramento contínuo (proporção referência vs. biossimilar por UF e ano) e acoplar farmacovigilância de troca (switch), acompanhando manutenção de resposta e eventos adversos após a substituição — especialmente nas trocas entre biossimilares (A↔︎B), menos respaldadas por evidência do que a troca referência→biossimilar.\nUsar a densidade de dermatologistas (CNES) como indicador de equidade. A própria variável que confunde a taxa de detecção pode ser convertida em instrumento de monitoramento: razão de dermatologistas por 100 mil habitantes por UF e região de saúde, pactuada como marcador de capacidade diagnóstica instalada. Onde a densidade é baixa e a detecção também, presume-se demanda reprimida, não ausência de doença.\nTeledermatologia para o gargalo de oferta. Diante de uma desigualdade de 6× na oferta especializada, a teledermatologia (teleconsultoria e telediagnóstico, integráveis à RNDS e ao Meu SUS Digital) é a via mais factível para encurtar a distância entre o paciente do interior do Norte/Nordeste e o diagnóstico, sem depender da fixação de especialistas em todos os municípios.\nQualificar a codificação na ponta. Reduzir a subcodificação (L02x → L73.2) por meio de capacitação e de regras de qualificação no e-SUS APS melhoraria simultaneamente a detecção e a confiabilidade da vigilância — pré-requisito para qualquer estimativa de carga mais próxima da realidade.\nBuscar o identificador longitudinal. A integração via CNS/RNDS, sob salvaguardas da LGPD (dado pessoal sensível, anonimização e base legal para uso secundário), permitiria, no futuro, mensurar atraso diagnóstico, recidiva e trajetória de tratamento — hoje inacessíveis no dado público agregado."
+    "text": "Perspectivas e oportunidades de acesso\n\nMonitorar a substituição por biossimilar como indicador contínuo (proporção referência × biossimilar por UF e ano), com farmacovigilância das trocas.\nUsar a densidade de dermatologistas (CNES) como indicador de equidade: onde densidade e detecção são baixas, presume-se demanda reprimida.\nTeledermatologia para encurtar a distância entre o paciente do interior e o diagnóstico especializado.\nQualificar a codificação na ponta (L02 → L73.2), o que melhoraria detecção e vigilância ao mesmo tempo.\nBuscar o identificador longitudinal (CNS/RNDS, sob salvaguardas da LGPD) para medir atraso diagnóstico, recidiva e trajetória de tratamento."
   },
   {
     "objectID": "consideracoes_finais.html#considerações-finais",
     "href": "consideracoes_finais.html#considerações-finais",
     "title": "Considerações finais",
     "section": "Considerações finais",
-    "text": "Considerações finais\nOs microdados do DATASUS retratam a HS no SUS como uma doença ambulatorial, crônica e de alto custo, cujo principal achado de gestão é a já consolidada transição para biossimilares de adalimumabe, e cujo principal achado de saúde pública é uma inequidade de detecção fortemente determinada pela oferta de dermatologistas (r = 0,71; variação de ~6× entre UFs), com vazios persistentes no interior do Norte e Nordeste.\nÉ imprescindível reafirmar os limites do que foi medido: trabalhamos com detecção e uso, não prevalência; com registros, não pessoas; com captura restrita a L73.2, sujeita a viés de gravidade e à descontinuidade imposta pela pandemia em 2020–2021. As referências ao contexto normativo (PCDT da HS e fluxos do CEAF) permanecem [VERIFICAR] quanto a números e vigência antes de qualquer afirmação definitiva.\n\nA mensagem central, contudo, é robusta a essas ressalvas: no SUS, detectar HS depende de ter a quem detectar — e a desigualdade na oferta diagnóstica, somada à incipiente migração para biossimilares, define tanto o problema de equidade quanto a oportunidade de eficiência que esta análise coloca diante da gestão."
+    "text": "Considerações finais\nÉ imprescindível reafirmar os limites: detecção e uso, não prevalência; registros, não pessoas; captura restrita a L73.2, sujeita a viés de gravidade; regras de registro que mudam no tempo (BPA-C sem CID até 2013; compatibilidades do SIGTAP); e a descontinuidade da pandemia em 2020–2022.\n\nA mensagem central é robusta a essas ressalvas: no SUS, detectar HS depende de ter quem detecte e de o registro carregar o CID — e a incorporação do adalimumabe deu ao CID L73.2 uma consequência terapêutica que mudou o próprio dado."
   },
   {
     "objectID": "sih_hs.html",
     "href": "sih_hs.html",
     "title": "Internações (SIH-RD)",
     "section": "",
-    "text": "631\n\n\ninternações (AIH distintas)\n\n\n\n\n2,0 dias\n\n\npermanência mediana\n\n\n\n\n49,7%\n\n\ninternações de urgência\n\n\n\n\nR$ 345.233\n\n\ngasto hospitalar total\nA HS internada tende a ser moderada/grave (drenagem, exérese, reconstrução). São 631 AIH com diag_princ == L732 em 2020–2025 — apenas o sabor diagnóstico principal (a extração não recupera HS como diagnóstico secundário)."
+    "text": "974\n\n\nAIH com HS no diagnóstico principal\n\n\n\n\n2.147\n\n\nAIH com HS em qualquer campo\n\n\n\n\n2,0 dias\n\n\npermanência mediana\n\n\n\n\nR$ 559.349\n\n\ngasto hospitalar (R$ de 2025)\nA unidade é a AIH distinta (uma AIH de longa permanência reaparece em várias competências), e o ano é o da competência (ANO_CMPT). Há dois sabores de caso:\nNas AIH de HS (principal), a parte com algum secundário válido varia entre 0,0% e 25,6% conforme o ano."
   },
   {
     "objectID": "sih_hs.html#carga-e-perfil",
@@ -116,14 +116,14 @@
     "href": "sih_hs.html#comorbidades-registradas",
     "title": "Internações (SIH-RD)",
     "section": "Comorbidades registradas",
-    "text": "Comorbidades registradas\nBuscadas nos campos secundários (diag_secun, diagsec1–9).\n\n\n\n\n\n\n\n\n\n\nForte subnotificação. Apenas ~16% das AIH-HS têm qualquer diagnóstico secundário preenchido (84% nenhum), com completude muito heterogênea por UF (SP ~32%, vários estados 0%). Os percentuais acima são piso subestimado e enviesado — leia como “comorbidade registrada na AIH”, não prevalência. datasus_hs.md §4."
+    "text": "Comorbidades registradas\nBuscadas nos campos secundários das AIH com HS no principal (lista em scripts/hs_lookup.R).\n\n\n\n\n\n\n\n\n\n\nForte subnotificação. Só 13,9% das AIH de HS têm algum diagnóstico secundário válido. Os percentuais acima são piso subestimado — leia como “comorbidade registrada na AIH”, não prevalência (datasus_hs.md §4)."
   },
   {
     "objectID": "sih_hs.html#custos-hospitalares",
     "href": "sih_hs.html#custos-hospitalares",
     "title": "Internações (SIH-RD)",
     "section": "Custos hospitalares",
-    "text": "Custos hospitalares\n\n\nAnoInternaçõesGasto total (R$)Custo médio/AIH (R$)2,0204716.8333582,0214220.3734852,0229044.4654942,02310141.3484092,02414078.5875612,025211143.627681val_tot (SIH). Não inclui o alto custo ambulatorial (adalimumabe/APAC), ausente nesta extração do SIA-PA."
+    "text": "Custos hospitalares\n\n\nAnoInternaçõesGasto nominal (R$)Gasto em R$ de 2025Custo médio/AIH (R$ de 2025)2,010128161.9121592,01185101.1221402,012148101.6891212,0139379744832,014106581.2151212,0152810.27317.4026212,0164817.54027.3235692,0175526.26339.5487192,0189242.45061.6646702,0196726.10336.5545462,0204716.83322.8384862,0214220.37325.5226082,0229044.46550.9745662,02310141.34845.3194492,02414077.98481.8975852,025211143.627143.627681VAL_TOT do SIH, deflacionado pelo IPCA médio anual (IBGE/SIDRA 1737). Não inclui o adalimumabe (ambulatorial). Células com 1 a 4 eventos suprimidas (LGPD), exibidas como \"&lt;5\" ou em branco."
   },
   {
     "objectID": "sih_hs.html#taxa-de-internação-padronizada",
@@ -137,14 +137,14 @@
     "href": "sih_hs.html#limitações",
     "title": "Internações (SIH-RD)",
     "section": "Limitações",
-    "text": "Limitações\n\nSó o sabor diagnóstico principal (HS em secundário não recuperável); comorbidade subnotificada (§4); sem alto custo ambulatorial (sem APAC); N baixo → taxas instáveis; 2020–2021 sob pandemia. datasus_hs.md §9."
+    "text": "Limitações\n\nO sabor “qualquer campo” cresce com o preenchimento dos secundários e não deve ser lido como tendência; comorbidade subnotificada; sem o adalimumabe (ambulatorial); N baixo → taxas instáveis; 2020–2022 sob pandemia; o modo de faturamento varia entre UFs, então diferença no SIH pode ser forma de faturar, não morbidade (guia §6.2). datasus_hs.md §9."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Hidradenite Supurativa no SUS",
     "section": "",
-    "text": "A Hidradenite Supurativa (HS) — ou acne inversa — é uma doença inflamatória crônica da pele, subdiagnosticada, de predomínio em mulheres adultas jovens, com forte impacto na qualidade de vida e peso cirúrgico e de alto custo (adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — SIA-PA (ambulatorial), SIH-RD (internações) e SIM-DO (mortalidade) — no período 2020–2025, usando captura restrita (L732)."
+    "text": "A Hidradenite Supurativa (HS), ou acne inversa, é uma doença inflamatória crônica da pele, subdiagnosticada, de predomínio em adultos jovens, com peso cirúrgico e de alto custo (adalimumabe) para o SUS. Este painel triangula três bases do DATASUS — SIA-PA (ambulatorial), SIH-RD (internações) e SIM-DO (mortalidade) — de 2010 a 2025 (SIM definitivo até 2024), com captura restrita ao código L732."
   },
   {
     "objectID": "index.html#tendência-da-carga-registrada-20202025",
@@ -165,14 +165,14 @@
     "href": "index.html#navegação",
     "title": "Hidradenite Supurativa no SUS",
     "section": "Navegação",
-    "text": "Navegação\n\nAmbulatorial (SIA) — perfil, taxas padronizadas, pseudo-pacientes, inequidades.\nInternações (SIH) — peso cirúrgico, permanência, comorbidades, custos.\nMortalidade (SIM) — exploratório, N baixo, HS quase invisível."
+    "text": "Navegação\n\nAmbulatorial (SIA) — canais, taxas, série interrompida, tratamento, inequidades.\nInternações (SIH) — dois sabores de caso, peso cirúrgico, comorbidades, custos.\nMortalidade (SIM) — exploratório, N baixo, HS quase invisível.\nConsiderações finais · Notas de lançamento"
   },
   {
     "objectID": "sim_hs.html",
     "href": "sim_hs.html",
     "title": "Mortalidade (SIM-DO)",
     "section": "",
-    "text": "96\n\n\nóbitos com HS (qualquer campo)\n\n\n\n\n1\n\n\nóbitos com HS como causa básica\n\n\n\n\n50,1 anos\n\n\nidade média ao óbito\n\n\n\n\n46,9%\n\n\ndo sexo feminino"
+    "text": "103\n\n\nóbitos com HS em qualquer campo (2010–2024)\n\n\n\n\n&lt;5\n\n\nóbitos com HS como causa básica\n\n\n\n\n54,0 anos\n\n\nidade mediana ao óbito\n\n\n\n\n45,6%\n\n\ndo sexo feminino"
   },
   {
     "objectID": "sim_hs.html#distribuição-temporal-e-fonte",
@@ -186,7 +186,7 @@
     "href": "sim_hs.html#onde-a-hs-aparece-na-declaração-de-óbito",
     "title": "Mortalidade (SIM-DO)",
     "section": "Onde a HS aparece na Declaração de Óbito",
-    "text": "Onde a HS aparece na Declaração de Óbito\n\n\nposicaoobitos%Causa básica11,0Causa contribuinte (linhas)9599,0HS é quase sempre causa contribuinte, não básica — coerente com mortalidade por causas associadas (sepse, comorbidades), não pela HS em si."
+    "text": "Onde a HS aparece na Declaração de Óbito\n\n\nPosiçãoÓbitosCausa básica&lt;5Parte I (linhas a–d)72Parte II (contribuinte)30HS é quase sempre causa contribuinte, não básica. Células com 1 a 4 eventos suprimidas (LGPD), exibidas como \"&lt;5\" ou em branco.\n\n\n\n\nCausa básica (CID, 3 caracteres)ÓbitosA4119E1410L088L026J185Só causas com 5 ou mais óbitos no período; as demais estão suprimidas (LGPD)."
   },
   {
     "objectID": "sim_hs.html#perfil-por-sexo-e-idade",
@@ -200,6 +200,111 @@
     "href": "sim_hs.html#limitações",
     "title": "Mortalidade (SIM-DO)",
     "section": "Limitações",
-    "text": "Limitações\n\nSubnotificação quase total da HS como entidade na mortalidade; N muito baixo inviabiliza taxas; 2025 preliminar; mortalidade reflete causas associadas, não a HS diretamente. Exploratório por natureza. datasus_hs.md §9."
+    "text": "Limitações\n\nSubnotificação quase total da HS na mortalidade; N muito baixo inviabiliza taxas; 2025 preliminar; o crescimento da menção acompanha o maior preenchimento da parte II da DO; a mortalidade reflete causas associadas, não a HS diretamente. datasus_hs.md §9."
+  },
+  {
+    "objectID": "index.html#tendência-da-carga-registrada",
+    "href": "index.html#tendência-da-carga-registrada",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "Tendência da carga registrada",
+    "text": "Tendência da carga registrada\n\n\n\n\n\n\n\n\n\nCada painel tem escala própria — as bases não se comparam em magnitude. O canal clínico do SIA começa praticamente vazio por construção: até 2013 a consulta especializada só podia ser registrada em BPA consolidado, sem CID (ref/sigtap_hs.csv); por isso as tendências do canal clínico partem de 2014. Nesse período ele cresce 38,6% (IC 95% 33,1–44,7%) ao ano (2014–2025). Parte disso é expansão do registro individualizado: a fração do volume do SIA-PA em instrumento com CID vai de 23,2% (2010) para 49,9% (2025). Mesmo normalizada pela produção individualizada da dermatologia, a detecção de L73.2 sobe de 0,17 para 1,13 por mil procedimentos entre 2014 e 2025 (ver Ambulatorial)."
+  },
+  {
+    "objectID": "index.html#onde-a-hs-é-detectada-taxa-clínica-padronizada",
+    "href": "index.html#onde-a-hs-é-detectada-taxa-clínica-padronizada",
+    "title": "Hidradenite Supurativa no SUS",
+    "section": "Onde a HS é detectada — taxa clínica padronizada",
+    "text": "Onde a HS é detectada — taxa clínica padronizada\n\n\n\n\n\n\n\n\n\nAs maiores taxas estão em RJ, SC, SP, BA e PA e as menores em SE, PI, RN, TO e PB — um padrão influenciado pela oferta de dermatologistas (correlação entre UFs: Pearson r = 0,62; Spearman ρ = 0,53). A variação geográfica mede em boa parte acesso, não doença."
+  },
+  {
+    "objectID": "sia_hs.html#taxas-de-detecção-clínica-padronizadas",
+    "href": "sia_hs.html#taxas-de-detecção-clínica-padronizadas",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Taxas de detecção clínica padronizadas",
+    "text": "Taxas de detecção clínica padronizadas\nTaxas por 100 mil, padronizadas por idade e sexo (método direto, IC gama), calculadas sobre o canal clínico (Σ quantidade). São taxas de detecção/uso, não de prevalência.\n\nComo lemos as taxas\n\nPor que padronizar? A HS atinge sobretudo adultos jovens. Um estado com população mais jovem teria taxa bruta maior só pela demografia. A padronização direta responde: “qual seria a taxa se todos tivessem a mesma composição de idade e sexo?”, usando uma população-padrão comum — aqui, o Brasil de 2022 na Projeção da População do IBGE, revisão 2024, a mesma fonte do denominador anual de 2010 a 2025 (série única, sem o degrau entre censos).\n\nComo é calculada: (1) divide-se a população em 34 grupos (17 faixas × 2 sexos); (2) em cada grupo, taxa = eventos ÷ população; (3) multiplica-se cada taxa pela população-padrão do grupo; (4) soma-se e divide-se pela população-padrão total:\n\\[\\text{taxa padronizada} = \\frac{\\sum_i (\\text{taxa}_i \\times \\text{Pop. padrão}_i)}{\\sum_i \\text{Pop. padrão}_i} \\times 100\\,000\\]\nO cálculo usa epitools::ageadjust.direct(), com IC pelo método gama (Fay–Feuer). A taxa nacional é a taxa direta sobre todos os eventos do país, não a média das UFs. Taxas com menos de 5 eventos são suprimidas.\n\n⚠️ A padronização corrige idade e sexo, mas não corrige acesso nem mudanças de registro — por isso a normalização e a série interrompida abaixo.\n\n\n\n\n\n\n\n\n\n\n\n\nSériePeríodoSem 2020–2022Variação anualLeituraSIA clínico2014–2025não38,6% (IC 95% 33,1–44,7%)altaSIA clínico2014–2025sim37,8% (IC 95% 32,6–43,5%)altaSIA clínico2014–2019não31,3% (IC 95% 14,6–51,3%)altaSIH (principal)2010–2025não20,0% (IC 95% 14,6–25,9%)altaSIH (principal)2010–2025sim19,9% (IC 95% 15,3–24,9%)altaSIH (principal)2010–2019não31,9% (IC 95% 21,2–44,3%)altaSIA adalimumabe (pacientes/mês)2019–2025não59,6% (IC 95% 42,2–80,7%)altaSIA adalimumabe (pacientes/mês)2019–2025sim67,4% (IC 95% 34,0–121,3%)altaSIM (qualquer campo)2010–2024não19,2% (IC 95% 13,2–25,9%)altaVariação anual = (exp(β) − 1) × 100. IC que cruza o zero = sem tendência. O canal clínico parte de 2014 (antes, a consulta especializada não tinha CID). SIM: N muito pequeno e parte II da DO cada vez mais preenchida — leitura apenas descritiva.\n\n\n\n\nO crescimento é só mais registro?\nDois fenômenos de registro inflam o canal clínico ao longo do tempo: a parte do volume do SIA-PA lançada em instrumento com CID (BPA-I/APAC) passa de 23,2% em 2010 para 49,9% em 2025, e na dermatologia o BPA-I vai de 6,7% para 32,7% da produção entre 2014 e 2025. Dividindo os atendimentos com L73.2 pela produção individualizada dos dermatologistas (CBO 223117/225135), a taxa ainda sobe de 0,17 para 1,13 por mil procedimentos — a detecção cresce além da expansão do registro."
+  },
+  {
+    "objectID": "sia_hs.html#série-interrompida-o-marco-do-adalimumabe",
+    "href": "sia_hs.html#série-interrompida-o-marco-do-adalimumabe",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Série interrompida: o marco do adalimumabe",
+    "text": "Série interrompida: o marco do adalimumabe\nO marco pré-especificado é 11/2019: a Portaria SAES/MS 1.217/2019 torna L73.2 compatível com o adalimumabe no SIGTAP (ref/normativo_hs.md). O modelo mensal (quasi-Poisson, sazonalidade, indicadora de pandemia, offset populacional) estima a mudança de nível no marco e a inclinação antes e depois, para o canal clínico de 2014 a 2025.\n\n\n\n\n\n\n\n\n\n\n\nCenárionível no marco (razão de taxas)tendência antes (%/ano)tendência depois (%/ano)Primário (marco 11/2019)0,65 (IC 95% 0,48–0,88)30,99 (IC 95% 20,60–42,27)52,03 (IC 95% 45,36–59,02)Marco alternativo 11/20180,59 (IC 95% 0,43–0,81)37,71 (IC 95% 22,56–54,73)47,38 (IC 95% 42,37–52,57)Pandemia até dez/20220,74 (IC 95% 0,52–1,05)30,92 (IC 95% 20,23–42,57)48,04 (IC 95% 40,39–56,10)Sem mar/2020–dez/20210,68 (IC 95% 0,52–0,90)31,16 (IC 95% 21,80–41,25)50,38 (IC 95% 44,40–56,60)Sem anatomopatológico/citologia0,64 (IC 95% 0,45–0,89)30,33 (IC 95% 18,84–42,92)57,14 (IC 95% 49,75–64,89)Nível: razão de taxas imediatamente após o marco. Tendências em %/ano. 'Sem anatomopatológico/citologia' remove procedimentos cuja compatibilidade com L73.2 mudou em 06–08/2019, sem relação com o adalimumabe.\n\n\nLeitura. No cenário primário, a inclinação do canal clínico passa de 31,0% (IC 95% 20,6–42,3%) para 52,0% (IC 95% 45,4–59,0%), e o nível no marco tem razão de taxas 0,65 (IC 95% 0,48–0,88). Em pelo menos um cenário de sensibilidade o IC do nível cruza 1, e o marco fica a 4 meses do início da pandemia: a mudança de nível não deve ser lida como efeito do medicamento. O aumento de inclinação é consistente entre os cenários, mas o desenho é ecológico e não separa a incorporação de outras mudanças simultâneas (expansão do BPA-I, oferta de dermatologistas).\n\nEstrato-alvo: mulheres 20–39"
+  },
+  {
+    "objectID": "sia_hs.html#inequidade-geográfica",
+    "href": "sia_hs.html#inequidade-geográfica",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Inequidade geográfica",
+    "text": "Inequidade geográfica\n\n\nUFEventosTaxa brutaTaxa padronizadaIC 95%vs BrasilBrasil (referência nacional)BRASIL27.2451,091,091,07–1,10—NortePA1.1491,141,331,25–1,41+23%RO1110,540,540,45–0,66-50%AM1760,360,360,31–0,42-67%AC250,240,280,18–0,44-74%TO370,200,200,14–0,29-81%AP&lt;5————RR&lt;5————NordesteBA2.7151,541,451,40–1,51+34%AL4551,181,171,06–1,28+7%CE7660,710,690,64–0,74-36%PE5770,510,500,46–0,55-54%MA3920,470,490,44–0,54-55%PB1310,270,270,22–0,32-75%RN400,100,090,07–0,13-91%PI360,090,090,06–0,12-92%SE200,070,070,04–0,12-93%Centro-OesteDF4741,361,321,20–1,44+21%MT4070,950,930,84–1,03-14%MS2560,770,780,69–0,88-28%GO5250,630,620,56–0,67-43%SudesteRJ4.4092,142,152,08–2,21+98%SP8.1041,491,481,45–1,52+37%ES4490,940,940,85–1,03-14%MG2.1760,870,870,83–0,90-20%SulSC1.6021,791,771,68–1,86+63%RS1.2370,920,930,88–0,98-14%PR9690,700,700,66–0,75-35%Canal clínico, Σ quantidade. Padronização direta idade×sexo, padrão Brasil 2022 (Projeção IBGE 2024). 'vs Brasil' = diferença % da taxa da UF em relação à nacional. A variação reflete fortemente o acesso, não só doença. Células com 1 a 4 eventos suprimidas (LGPD), exibidas como \"&lt;5\" ou em branco.\n\n\n\n\n\n\n\n\n\n\n\n\nOferta de dermatologistas e o confundimento por acesso\nA densidade de dermatologistas no Brasil (CNES-PF, junho de cada ano) passa de 2,83 para 6,59 por 100 mil habitantes entre 2010 e 2025; em 2025 varia 5,9 vezes entre a maior (DF, 11,1) e a menor UF (RR, 1,9).\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nA associação entre oferta de dermatologia e detecção indica que a variação geográfica mede, em boa parte, capacidade diagnóstica instalada. É uma correlação ecológica entre UFs; não autoriza inferência individual."
+  },
+  {
+    "objectID": "sia_hs.html#tratamento-com-adalimumabe",
+    "href": "sia_hs.html#tratamento-com-adalimumabe",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Tratamento com adalimumabe",
+    "text": "Tratamento com adalimumabe\nDesde 2019, o canal de medicamento mede pessoas em tratamento: a mediana mensal de APAC distintas de adalimumabe com CID L73.2 chega a 4.052 em 2025. Em 2025, as APAC de HS correspondem a 6,1% de todas as linhas de adalimumabe do SIA-PA (o restante são as demais indicações do medicamento, registradas com outros CID).\n\n\n\n\n\n\n\n\n\n\nTransição para biossimilares por estado\nA participação do produto de referência nas dispensações de HS cai de 100,0% em 2021 para 3,2% em 2025, com a entrada do Biossimilar A (07/2022) e do Biossimilar B (09/2022) (ref/normativo_hs.md)."
+  },
+  {
+    "objectID": "sia_hs.html#o-paciente-precisa-se-deslocar",
+    "href": "sia_hs.html#o-paciente-precisa-se-deslocar",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "O paciente precisa se deslocar?",
+    "text": "O paciente precisa se deslocar?\nComparando o município de residência (PA_MUNPCN) com o do estabelecimento (PA_UFMUN), por canal. No canal de medicamento, o município da APAC do CEAF é pouco confiável em algumas UFs (guia §8.2) — leia a comparação entre UFs com cautela."
+  },
+  {
+    "objectID": "sia_hs.html#procedimentos-mais-frequentes",
+    "href": "sia_hs.html#procedimentos-mais-frequentes",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Procedimentos mais frequentes",
+    "text": "Procedimentos mais frequentes\n\n\nPeríodoCódigoProcedimentoΣ quantidade2010–20190203020030Exame anatomo-patologico para congelamento / parafina por peca cirurgica ou por biopsia (exceto col7552010–20190301010072Consulta medica em atencao especializada5742010–20190803010125Unidade de remuneracao para deslocamento de paciente por transporte terrestre (cada 50 km )5062010–20190803010109Unidade de remuneracao para deslocamento de acompanhante por transporte terrestre (cada 50 km de di3862010–20190401010058Excisao de lesao e/ou sutura de ferimento da pele anexos e mucosa3682010–20190301060096Atendimento medico em unidade de pronto atendimento2892010–20190401010015Curativo grau ii c/ ou s/ debridamento2582010–20190301010064Consulta medica em atencao primaria1572020–20250301010072Consulta medica em atencao especializada5.9812020–20250301060096Atendimento medico em unidade de pronto atendimento4.3372020–20250301060118Acolhimento com classificacao de risco2.1192020–20250803010125Unidade de remuneracao para deslocamento de paciente por transporte terrestre (cada 50 km )1.3462020–20250203020030Exame anatomo-patologico para congelamento / parafina por peca cirurgica ou por biopsia (exceto col1.3392020–20250301100012Administracao de medicamentos na atencao especializada.8642020–20250401010058Excisao de lesao e/ou sutura de ferimento da pele anexos e mucosa8502020–20250803010010Ajuda de custo p/ alimentacao/pernoite de paciente840Rótulos: tabela SIGTAP em cache (data/denominators/sigtab.rds)."
+  },
+  {
+    "objectID": "sia_hs.html#envelope-de-subcodificação-l02",
+    "href": "sia_hs.html#envelope-de-subcodificação-l02",
+    "title": "Ambulatorial (SIA-PA)",
+    "section": "Envelope de subcodificação (L02)",
+    "text": "Envelope de subcodificação (L02)"
+  },
+  {
+    "objectID": "sih_hs.html#os-dois-sabores-ao-longo-do-tempo",
+    "href": "sih_hs.html#os-dois-sabores-ao-longo-do-tempo",
+    "title": "Internações (SIH-RD)",
+    "section": "Os dois sabores ao longo do tempo",
+    "text": "Os dois sabores ao longo do tempo\n\n\n\n\n\n\n\n\n\nA série primária cresce 20,0% (IC 95% 14,6–25,9%) ao ano (2010–2025); sem 2020–2022, 19,9% (IC 95% 15,3–24,9%) ao ano (2010–2025).\n\n\n\n\n\n\n\n\n\nNo modelo mensal, a inclinação passa de 32,9% (IC 95% 25,7–40,4%) para 24,2% (IC 95% 15,2–33,8%); a razão de taxas no marco é 0,53 (IC 95% 0,35–0,79). Os valores mensais observados não são exibidos (contagens pequenas); cenários de sensibilidade em data/export/csv/its.csv."
+  },
+  {
+    "objectID": "sih_hs.html#procedimentos-realizados",
+    "href": "sih_hs.html#procedimentos-realizados",
+    "title": "Internações (SIH-RD)",
+    "section": "Procedimentos realizados",
+    "text": "Procedimentos realizados\n\n\nPeríodoCódigoProcedimentoAIH2010–20190301060070Diagnostico e/ou atendimento de urgencia em clinica cirurgica682010–20190301060088Diagnostico e/ou atendimento de urgencia em clinica medica402010–20190401020053Excisao e sutura de lesao na pele c/ plastica em z ou rotacao de retalho392010–20190401020100Extirpacaoe supressao de lesao de pele e de tecido celular subcutaneo342010–20190303080094Tratamento de outras afeccoes da pele e do tecido subcutaneo202010–20190415040035Debridamento de ulcera / de tecidos desvitalizados202010–20190415010012Tratamento c/ cirurgias multiplas142010–20190407020225Excisao de lesao / tumor anu-retal82020–20250401020053Excisao e sutura de lesao na pele c/ plastica em z ou rotacao de retalho862020–20250301060088Diagnostico e/ou atendimento de urgencia em clinica medica742020–20250401020100Extirpacaoe supressao de lesao de pele e de tecido celular subcutaneo722020–20250303080094Tratamento de outras afeccoes da pele e do tecido subcutaneo712020–20250301060070Diagnostico e/ou atendimento de urgencia em clinica cirurgica412020–20250415010012Tratamento c/ cirurgias multiplas392020–20250415040035Debridamento de ulcera / de tecidos desvitalizados372020–20250303010037Tratamento de outras doencas bacterianas25PROC_REA. Rótulos: tabela SIGTAP em cache."
+  },
+  {
+    "objectID": "sim_hs.html#distribuição-temporal",
+    "href": "sim_hs.html#distribuição-temporal",
+    "title": "Mortalidade (SIM-DO)",
+    "section": "Distribuição temporal",
+    "text": "Distribuição temporal"
+  },
+  {
+    "objectID": "consideracoes_finais.html#o-marco-do-adalimumabe",
+    "href": "consideracoes_finais.html#o-marco-do-adalimumabe",
+    "title": "Considerações finais",
+    "section": "O marco do adalimumabe",
+    "text": "O marco do adalimumabe\nA série interrompida no marco de 11/2019 mostra que a inclinação do canal clínico passa de 31,0% (IC 95% 20,6–42,3%) para 52,0% (IC 95% 45,4–59,0%). Nos cenários de sensibilidade (pandemia até 2022, sem 2020–2021, marco alternativo, sem os exames cuja compatibilidade com L73.2 mudou em 2019) a inclinação fica entre 30,3% a 37,7% ao ano antes e 47,4% a 57,1% ao ano depois. É compatível com a hipótese de que a incorporação também aumentou a codificação clínica de L73.2 — o CID passa a ter consequência terapêutica —, mas o desenho é ecológico: no mesmo período crescem o registro individualizado e a oferta de dermatologistas, e a mudança de nível no marco coincide com o início da pandemia."
+  },
+  {
+    "objectID": "consideracoes_finais.html#a-transição-para-biossimilares",
+    "href": "consideracoes_finais.html#a-transição-para-biossimilares",
+    "title": "Considerações finais",
+    "section": "A transição para biossimilares",
+    "text": "A transição para biossimilares\nA participação do produto de referência nas dispensações de HS cai de 100,0% em 2021 para 3,2% em 2025, depois da criação dos códigos do Biossimilar A (07/2022) e do Biossimilar B (09/2022) (ref/normativo_hs.md). A substituição, heterogênea entre estados, é visível diretamente nos microdados — um uso do dado administrativo que alcança a gestão do CEAF."
+  },
+  {
+    "objectID": "notas_lancamento.html",
+    "href": "notas_lancamento.html",
+    "title": "Notas de lançamento",
+    "section": "",
+    "text": "v2 — 23/10/2026. Agregados gerados em 2026-10-23 12:08:22; definição de caso scripts/hs_lookup.R (hash 579aef67852b…). A versão anterior está preservada na tag git v1-2020-2025.\n\n\n\n\n\n\n\n\nTema\nv1\nv2\n\n\n\n\nPeríodo\n2020–2025\nSIA/SIH 2010–2025 (arquivos de 2026 fecham as competências de 2025); SIM definitivo 2010–2024 + 2025 preliminar à parte\n\n\nFonte dos brutos\nRData pré-filtrados (SIA e SIH só pelo CID principal; SIM processado pelo microdatasus)\nDBC originais, filtrados por escopo próprio (scripts/r550/filtrar_um_hs.R), validados contra a v1 numa UF × ano\n\n\nAno do SIA\ntrimestre do arquivo\ncompetência de atendimento (PA_CMP)\n\n\nUnidade do SIA\nlinhas (nrow), misturando consulta e dispensação\ntrês canais: clínico (Σ quantidade), medicamento (APAC distintas/mês), envelope L02 (agregado)\n\n\nCamadas de CID\nL732 / “L73x” / L02x\nnúcleo L732 / limítrofe L738–L739 / diferencial L730–L731 separado / envelope L02\n\n\nSIH\nsó diagnóstico principal\nprincipal (série primária) + qualquer campo (teto)\n\n\nSIM\nL732 buscado no texto do SIM processado\nregex de causas múltiplas sobre o DBC bruto; causa básica × qualquer linha\n\n\nDenominador\nCenso 2022 repetido em todos os anos\nProjeção da População IBGE, revisão 2024, anual\n\n\nPopulação-padrão\nCenso 2022\nBrasil 2022 da mesma projeção\n\n\nPandemia\n2020–2021\n2020–2022 (sensibilidade principal)\n\n\nTendência\ndescritiva\nquasi-Poisson com offset + série interrompida no marco 11/2019\n\n\nPseudo-pacientes\nraça/cor ausente virava paciente próprio; sem nº de APAC\nraça/cor ausente = “NI”; ligação certa pelo nº da APAC; método determinístico\n\n\nDermatologistas\nCenso 2022 fixo como denominador\npopulação do próprio ano; CNES-PF de junho, 2010–2025\n\n\nCustos do SIH\nnominais\ndeflacionados pelo IPCA (R$ de 2025)\n\n\nNúmeros no texto\nparte escrita à mão\ntodos por R inline (qmd/_numeros.R)\n\n\nDados no site\nmicrodados locais\nsó agregados com supressão de N &lt; 5\n\n\n\nNúmeros que mudaram de forma relevante. O intervalo de pseudo-pacientes em 2020–2025 passa a 11.720–15.765 (a v1 inflava o limite superior por raça/cor ausente). A correlação entre oferta de dermatologistas e detecção passa a r = 0,62, agora sobre o canal clínico e a população de cada ano. O SIH de 2020–2025 reproduz exatamente a v1 no diagnóstico principal.\nCorreção de software. O denominador agregado do filtro herdado do projeto EIM somava, em cada estrato, o total do arquivo para quantidades e valores (SIA) e para óbitos e diárias (SIH). Corrigido em scripts/r550/filtrar_um_hs.R antes da passada completa."
   }
 ]
