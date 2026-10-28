@@ -146,7 +146,8 @@ datasus_HS/
 ├── CLAUDE.md                     # este guia
 ├── datasus_hs.md                 # plano consolidado / metodologia
 ├── plano_expansao_2010.md        # plano e STATUS da v2 (2010–2025)
-├── ref/                          # guia_processamento_datasus.md (EIM), normativo_hs.md, sigtap_hs.csv
+├── ref/                          # guia_processamento_datasus.md (EIM), normativo_hs.md, sigtap_hs.csv,
+│                                 #   dicionario_export_v2.md (tabelas, supressão e fontes canônicas do export)
 ├── .gitignore
 ├── renv.lock
 ├── scripts/
@@ -246,6 +247,8 @@ No R550-2, `~/Documentos/ronald/datasus_HS/` é a cópia de trabalho (scripts po
   - **números no texto só por R inline** (`qmd/_numeros.R`), nunca digitados;
   - **site lê só `data/export/`** (agregados suprimidos); evitar tabelas com subtotais
     que permitam recuperar célula suprimida por diferença.
+  - **suprimir o numerador junto com a taxa** (`sup_taxa()`); o export roda
+    `verificar_supressao()` e se recusa a gravar se sobrar contagem entre 1 e 4.
 
 ### Definição de caso: `scripts/hs_lookup.R`
 
