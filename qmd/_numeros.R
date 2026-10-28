@@ -56,9 +56,7 @@ RHO_DERM <- stats::cor(UFC$derm_100k, UFC$taxa_pad, use = "complete.obs", method
 
 # Adalimumabe: biossimilares e parte das APAC que é HS
 LABS_ADA <- c("0604380062" = "Referência", "0604380127" = "Biossimilar A", "0604380135" = "Biossimilar B")
-BIO <- E$biossimilar_uf |> dplyr::group_by(ano, pa_proc_id) |>
-  dplyr::summarise(n = sum(n, na.rm = TRUE), .groups = "drop") |>
-  dplyr::group_by(ano) |> dplyr::mutate(pct = 100 * n / sum(n)) |> dplyr::ungroup()
+BIO <- E$biossimilar_br   # nacional sem perda de células (ref/dicionario_export_v2.md)
 PCT_REF <- function(ano_) BIO$pct[BIO$ano == ano_ & BIO$pa_proc_id == "0604380062"] %||% 0
 ADA_L732_25 <- E$adalimumabe_todos_cid |> dplyr::filter(ano == 2025) |>
   dplyr::summarise(p = 100 * sum(linhas[l732], na.rm = TRUE) / sum(linhas, na.rm = TRUE)) |> dplyr::pull(p)

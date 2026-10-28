@@ -18,6 +18,43 @@ source(here::here("scripts", "calcular_taxas.R"))
 
 sup <- function(x) ifelse(!is.na(x) & x > 0 & x < N_SUPRESSAO, NA, x)   # supressão de célula
 sup_df <- function(df, cols) dplyr::mutate(df, dplyr::across(dplyr::all_of(cols), sup))
+# Tabelas de TAXA: suprime o NUMERADOR junto com a taxa (taxa suprimida com numerador
+# à vista não é supressão — auditoria do manuscrito, P2) e explica por que a taxa é NA.
+sup_taxa <- function(df, col_ev = "eventos") {
+  df |>
+    dplyr::mutate(motivo_supressao = dplyr::case_when(
+                    .data[[col_ev]] > 0 & .data[[col_ev]] < N_SUPRESSAO ~ "N < 5",
+                    .data[[col_ev]] == 0 ~ "sem evento",
+                    TRUE ~ NA_character_)) |>
+    sup_df(col_ev)
+}
+# Colunas de CONTAGEM de evento (registros, AIH, óbitos, pacientes) verificadas antes de gravar.
+# Fora da regra: derm_uf (profissionais do CNES, cadastro público — decisão P2b).
+COLS_CONTAGEM <- c("eventos", "n", "linhas", "qtd", "obitos", "aih", "n_hs", "seringas", "com_secundario",
+                   "qtd_derm_l732", "sih_principal", "sih_qualquer", "sim_qualquer", "sim_cb",
+                   "sia_clinico_linhas", "sia_clinico_qtd", "sia_medic_linhas", "sia_medic_seringas",
+                   "pacientes_mes_mediana", "registros", "pseudo_frouxa", "pseudo_estrita",
+                   "pseudo_intermediaria", "n_chave_incompleta")
+TABELAS_FORA_DA_REGRA <- "derm_uf"
+TOT_CONTAGEM <- c("sia_nucleo_linhas", "sia_linhas_l73", "sia_clinico_linhas", "sia_clinico_qtd", "sia_medic_linhas",
+                  "sih_aih_principal", "sih_aih_qualquer", "sih_obitos", "sim_qualquer_def", "sim_cb_def",
+                  "sim_parte_ii_def", "sim_prelim")
+verificar_supressao <- function(E) {
+  achados <- purrr::imap_dfr(E[vapply(E, is.data.frame, logical(1))], function(df, nome) {
+    if (nome %in% TABELAS_FORA_DA_REGRA) return(NULL)
+    purrr::map_dfr(intersect(COLS_CONTAGEM, names(df)), function(col) {
+      v <- suppressWarnings(as.numeric(df[[col]]))
+      k <- sum(!is.na(v) & v > 0 & v < N_SUPRESSAO)
+      if (k) tibble::tibble(tabela = nome, coluna = col, celulas = k)
+    })
+  })
+  tot_peq <- names(Filter(function(v) !is.na(v) && v > 0 && v < N_SUPRESSAO, E$tot[TOT_CONTAGEM]))
+  if (nrow(achados) || length(tot_peq)) {
+    print(as.data.frame(achados)); if (length(tot_peq)) message("E$tot com contagem < 5: ", toString(tot_peq))
+    stop("export recusado: há contagens entre 1 e ", N_SUPRESSAO - 1, " (LGPD)")
+  }
+  message("✓ verificação de supressão: nenhuma contagem entre 1 e ", N_SUPRESSAO - 1)
+}
 E <- list()
 cons <- function(f) here::here("data/consolidated", f)
 
@@ -81,6 +118,7 @@ E$tot <- list(
   sim_fem_pct = 100 * mean(simd$sexo == "Feminino", na.rm = TRUE),
   sim_prelim = sum(sim$hs_qualquer[sim$status_dado == "PRELIM" & sim$ano == 2025]),
   anos = range(ANOS), anos_sim = range(ANOS_SIM))
+E$tot[TOT_CONTAGEM] <- lapply(E$tot[TOT_CONTAGEM], sup)   # ex.: óbito com HS como causa básica
 
 # -----------------------------------------------------------------------------
 # 2. Taxas, tendências e ITS (já suprimidas em taxas_tendencias_hs.R)
@@ -93,7 +131,8 @@ E$taxas <- dplyr::bind_rows(
              dplyr::filter(pop, sexo == "Feminino", faixa %in% alvo_f), "ano") |>
     dplyr::mutate(serie = "sia_clinico_mulheres_20_39", nivel = "BR"),
   taxas_padronizadas(contar_estrato(dplyr::filter(sih_all, hs_qualquer), "uf_res", distinct_por = "n_aih"),
-                     pop, "ano") |> dplyr::mutate(serie = "sih_qualquer", nivel = "BR"))
+                     pop, "ano") |> dplyr::mutate(serie = "sih_qualquer", nivel = "BR")) |>
+  sup_taxa()
 E$tendencias <- readr::read_csv(cons("tendencias_hs.csv"), show_col_types = FALSE)
 
 # Produção dermatológica (CBO 223117/225135): parte com L732 no BPA-I → normaliza o canal
@@ -149,6 +188,7 @@ E$its_ajuste <- dplyr::bind_rows(
   its_ajuste(s_clin, MARCO) |> dplyr::mutate(serie = "sia_clinico"),
   its_ajuste(s_sih, MARCO)  |> dplyr::mutate(serie = "sih_principal")) |>
   dplyr::select(serie, cmp, ano, mes, eventos, ajustado, contrafactual, pop) |>
+  dplyr::mutate(eventos = dplyr::if_else(serie == "sih_principal", NA_real_, as.numeric(eventos))) |>
   sup_df("eventos")
 
 # -----------------------------------------------------------------------------
@@ -168,7 +208,10 @@ E$raca <- nuc |>
                 periodo = periodo(ano),
                 raca_cor = dplyr::coalesce(raca_cor, "Não informada")) |>
   dplyr::count(canal, periodo, raca_cor, name = "n") |> sup_df("n")
-E$completude <- readr::read_csv(here::here("manifest/completude_hs_por_ano.csv"), show_col_types = FALSE)
+E$completude <- readr::read_csv(here::here("manifest/completude_hs_por_ano.csv"), show_col_types = FALSE) |>
+  dplyr::filter((base == "SIM-DO" & ano %in% ANOS_SIM) | (base != "SIM-DO" & ano %in% ANOS)) |>   # sem 2026
+  dplyr::mutate(pct_hs = dplyr::if_else(n_hs > 0 & n_hs < N_SUPRESSAO, NA_real_, pct_hs)) |>
+  sup_df("n_hs")
 
 E$heatmap <- nuc |>
   dplyr::filter(!is.na(uf_pcn)) |>
@@ -184,13 +227,15 @@ E$derm_uf <- derm_uf
 E$uf_clinico_2014 <- taxas_padronizadas(dplyr::filter(num_clin, ano >= 2014), pop, "uf") |>
   dplyr::left_join(derm_uf |> dplyr::filter(ano >= 2014) |> dplyr::group_by(uf) |>
                      dplyr::summarise(derm_100k = mean(derm_por_100k), .groups = "drop"), by = "uf") |>
-  dplyr::mutate(regiao = mapear_uf_regiao(uf))
+  dplyr::mutate(regiao = mapear_uf_regiao(uf)) |>
+  sup_taxa()   # AP e RR: taxa NA por N < 5 (P7); derm_100k = MÉDIA das densidades anuais 2014–2025 (P7b)
 # referências nacionais em pessoa-anos (taxa DIRETA do país, não média das UFs)
 br_pool <- function(num, anos) taxas_padronizadas(dplyr::mutate(dplyr::filter(num, ano %in% anos), .br = "BR"),
                                                   dplyr::mutate(pop, .br = "BR"), ".br")
 num_sih <- contar_estrato(sih, col_uf = "uf_res", distinct_por = "n_aih")
 E$br_pool <- dplyr::bind_rows(br_pool(num_clin, 2014:2025) |> dplyr::mutate(serie = "sia_clinico", anos = "2014–2025"),
-                              br_pool(num_sih, ANOS) |> dplyr::mutate(serie = "sih_principal", anos = "2010–2025"))
+                              br_pool(num_sih, ANOS) |> dplyr::mutate(serie = "sih_principal", anos = "2010–2025")) |>
+  sup_taxa()
 E$trat_uf <- trat |> dplyr::filter(uf != "BR") |>
   dplyr::left_join(pop |> dplyr::group_by(uf, ano) |> dplyr::summarise(pop = sum(pop), .groups = "drop"),
                    by = c("uf", "ano")) |>
@@ -219,6 +264,9 @@ E$proc <- nuc |>
 E$biossimilar_uf <- med |> dplyr::filter(!is.na(uf_pcn)) |>
   dplyr::count(ano, uf = uf_pcn, pa_proc_id, name = "n") |>
   dplyr::mutate(regiao = mapear_uf_regiao(uf)) |> sup_df("n")
+E$biossimilar_br <- med |> dplyr::count(ano, pa_proc_id, name = "n") |>
+  dplyr::group_by(ano) |> dplyr::mutate(pct = 100 * n / sum(n)) |> dplyr::ungroup() |>
+  sup_df("n")   # fonte canônica da participação nacional por código (biossimilar_uf perde células suprimidas)
 E$adalimumabe_todos_cid <- arrow::read_parquet(cons("sia_adalimumabe_agg.parquet")) |>
   dplyr::mutate(l732 = camada %in% "nucleo") |>
   dplyr::group_by(ano, proc, l732) |>
@@ -234,6 +282,13 @@ E$pseudo <- readr::read_csv(here::here("manifest/sia_pseudo_pacientes_v2.csv"), 
 # -----------------------------------------------------------------------------
 sih1 <- dplyr::distinct(sih, n_aih, .keep_all = TRUE)
 E$sih_carater <- sih1 |> dplyr::count(ano, carater, name = "n") |> sup_df("n")
+E$sih_carater_br <- sih1 |> dplyr::count(carater, name = "n") |>
+  dplyr::mutate(pct = 100 * n / sum(n)) |> sup_df("n")
+E$sih_perm_resumo <- sih1 |>
+  dplyr::summarise(aih = dplyr::n(), p25 = stats::quantile(dias_perm, 0.25, na.rm = TRUE),
+                   mediana = stats::median(dias_perm, na.rm = TRUE),
+                   p75 = stats::quantile(dias_perm, 0.75, na.rm = TRUE),
+                   p90 = stats::quantile(dias_perm, 0.90, na.rm = TRUE))
 E$sih_perm <- sih1 |> dplyr::mutate(dias = pmin(dias_perm, 30)) |> dplyr::count(dias, name = "n") |> sup_df("n")
 com_cols <- grep("^com_", names(sih1), value = TRUE)
 # Só o período inteiro: subperíodos + total permitiriam recuperar célula suprimida por diferença
@@ -243,15 +298,15 @@ E$sih_comorb <- dplyr::mutate(sih1, periodo = paste0(min(ANOS), "–", max(ANOS)
                    dplyr::across(dplyr::all_of(com_cols), sum), .groups = "drop") |>
   tidyr::pivot_longer(dplyr::all_of(com_cols), names_to = "comorbidade", values_to = "n") |>
   dplyr::mutate(comorbidade = stringr::str_remove(comorbidade, "^com_")) |> sup_df("n")
-E$sih_custo <- sih1 |> dplyr::group_by(ano) |>
-  dplyr::summarise(aih = dplyr::n(), gasto_nominal = sum(val_tot, na.rm = TRUE), .groups = "drop") |>
+E$sih_custo <- sih |> dplyr::group_by(ano) |>
+  dplyr::summarise(aih = dplyr::n_distinct(n_aih), gasto_nominal = sum(val_tot, na.rm = TRUE), .groups = "drop") |>
   dplyr::mutate(gasto_nominal = dplyr::if_else(aih < N_SUPRESSAO, NA_real_, gasto_nominal)) |> sup_df("aih")
 E$sih_proc <- sih1 |> dplyr::mutate(periodo = periodo(ano)) |> dplyr::count(periodo, proc_rea, name = "n") |>
   sup_df("n")
 E$sih_sec <- sih1 |> dplyr::group_by(ano) |>
   dplyr::summarise(aih = dplyr::n(), pct_com_secundario = 100 * mean(n_sec_preench > 0), .groups = "drop") |>
   dplyr::mutate(pct_com_secundario = dplyr::if_else(aih < N_SUPRESSAO, NA_real_, pct_com_secundario)) |> sup_df("aih")
-E$sih_uf <- taxas |> dplyr::filter(serie == "sih_principal", nivel == "uf_pool")
+E$sih_uf <- E$taxas |> dplyr::filter(serie == "sih_principal", nivel == "uf_pool")   # já com sup_taxa()
 
 E$sim_posicao <- simd |>
   dplyr::mutate(posicao = dplyr::case_when(hs_causa_basica ~ "Causa básica",
@@ -265,12 +320,17 @@ E$sim_periodo <- simd |> dplyr::mutate(periodo = dplyr::if_else(ano <= 2017, "20
 
 E$meta <- list(gerado = format(Sys.time(), "%F %T"), lookup_hash = hs_lookup_hash(), marco = MARCO,
                inicio_clinico = INICIO_CLIN, n_supressao = N_SUPRESSAO, pop = "ibge_projecao_2024",
-               fonte = "DBC DATASUS 2010+ (R550-2), scripts/r550/filtrar_um_hs.R")
+               fonte = "DBC DATASUS 2010+ (R550-2), scripts/r550/filtrar_um_hs.R",
+               dicionario = "ref/dicionario_export_v2.md", R = R.version.string)
+
+verificar_supressao(E)   # falha o export se sobrar contagem entre 1 e 4 (lição da auditoria)
 
 dir.create(here::here("data/export/csv"), recursive = TRUE, showWarnings = FALSE)
 saveRDS(E, here::here("data/export/hs_v2_agregados.rds"))
 purrr::iwalk(E[vapply(E, is.data.frame, logical(1))],
              ~ readr::write_csv(.x, here::here("data/export/csv", paste0(.y, ".csv"))))
+writeLines(c(paste("export:", E$meta$gerado), capture.output(sessionInfo())),
+           here::here("manifest/sessioninfo_v2_r550.txt"))   # P8: versões da rodada no R550-2
 cat("\n• ITS (todos os cenários):\n")
 print(as.data.frame(dplyr::mutate(E$its, dplyr::across(c(estimativa, ic_inf, ic_sup), ~ round(.x, 2)))))
 cat("\n• canal clínico normalizado pela produção dermatológica (L732 por mil BPA-I de dermatologista):\n")
